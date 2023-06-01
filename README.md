@@ -4,6 +4,12 @@ A revised and more efficient software to replace Trello, exclusively for [SoilOp
 
 Live version: [Goatrello](https://goatrello.azurewebsites.net/)
 
+Tools:
+ASP.NET Core MVC, Entity Framework, Visual Studio, SQLite, Bootstrap, jQuery.
+
+# Accomplishment
+This project was exclusively designed and developed for [SoilOptix](https://soiloptix.com/), chosen among five competitors. It is currently in active use, providing value to the organization.
+
 # Team and Contact
 Cameron Shaefer
 
