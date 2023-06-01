@@ -1,0 +1,278 @@
+﻿@model Goatrello.Models.Board
+
+@{
+	ViewData["Title"] = "Edit Board";
+	IQueryable<LabelListLabel> labels = ViewBag.Labels;
+}
+
+
+<div class="pt-4">
+	<div class="background-darkest card">
+		<div class="row">
+			<div class="col-lg-8 col-md-12">
+				<form asp-action="Edit">
+					<div class="p-5 row justify-content-center">
+						<h2 class="text-center text-white mb-lg-5">
+							Edit @Model.Title
+							@if (!Model.IsArchived) //display archive button only if board is not archived
+							{
+								<a id="deleteBoard" class="text-decoration-none fs-4" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#boardDeleteModal" data-path="/Boards/Delete/@Model.Id" title="Archive Board">
+									<i class="fas fa-inbox text-danger"></i>
+								</a>
+							}
+						</h2>
+						<hr />
+
+						<div class="col-md-12 col-lg-8">
+							<p class="text-info">* Required Field</p>
+							<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+							<input type="hidden" asp-for="Id" />
+
+							<div class="form-group mb-4">
+								<label asp-for="Title" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The title of the Board. (ex. Board Name)"></label><span class="text-info"> *</span>
+								<input asp-for="Title" class="form-control" placeholder="ex. Board Name" />
+								<span asp-validation-for="Title" class="text-warning"></span>
+							</div>
+
+							<div class="form-group mb-4">
+								<label asp-for="Administrators" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The users who manages the current Board. Admins can manage current Board users, mark Board as public or private, and hide Lists to specific users."></label>@*<span class="text-info"> *</span>*@
+								@foreach (UserListUser user in Model.Administrators.Users)
+								{
+									<div>
+										<p class="grape mb-0 w-75" style="word-break:break-word;">
+											<strong>@user.User.DisplayName</strong>
+											<span>
+												<a asp-action="RemoveUser"
+											   asp-route-boardId="@Model?.Id"
+											   asp-route-userId="@user.User.Id"
+											   asp-route-userListSelect="Admin"
+				  class="text-danger text-decoration-none fs-5" style="cursor: pointer; margin-left: 0.5rem;" title="Remove user.">
+													<i class="fas fa-trash-alt"></i>
+												</a>
+											</span>
+										</p>
+									</div>
+								}
+							</div>
+
+							<div class="form-group mb-4">
+								<label asp-for="Members" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The users who can create/edit/move Cards."></label>@*<span class="text-info"> *</span>*@
+								@foreach (UserListUser user in Model.Members.Users)
+								{
+									<div>
+										<p class="grape mb-0 w-75" style="word-break:break-word;">
+											<strong>@user.User.DisplayName</strong>
+											<span>
+												<a asp-action="RemoveUser"
+											   asp-route-boardId="@Model?.Id"
+											   asp-route-userId="@user.User.Id"
+											   asp-route-userListSelect="Member"
+				  class="text-danger text-decoration-none fs-5" style="cursor: pointer; margin-left: 0.5rem;">
+													<i class="fas fa-trash-alt"></i>
+												</a>
+											</span>
+										</p>
+									</div>
+								}
+							</div>
+
+							<div class="form-group mb-4">
+								<label asp-for="Observers" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The users who can view all public Lists and Cards but unable to modify/move Cards."></label>@*<span class="text-info"> *</span>*@
+								@foreach (UserListUser user in Model.Observers.Users)
+								{
+									<div>
+										<p class="grape mb-0 w-75" style="word-break:break-word;">
+											<strong>@user.User.DisplayName</strong>
+											<span>
+												<a asp-action="RemoveUser"
+											   asp-route-boardId="@Model?.Id"
+											   asp-route-userId="@user.User.Id"
+											   asp-route-userListSelect="Observer"
+				  class="text-danger text-decoration-none fs-5" style="cursor: pointer; margin-left: 0.5rem;">
+													<i class="fas fa-trash-alt"></i>
+												</a>
+											</span>
+										</p>
+									</div>
+
+								}
+							</div>
+
+							<div class="form-group mb-4">
+								<label asp-for="HiddenFrom" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The users who cannot access the content inside the current Board."></label>@*<span class="text-info"> *</span>*@
+								@foreach (UserListUser user in Model.HiddenFrom.Users)
+								{
+									<div>
+										<p class="grape mb-0 w-75" style="word-break:break-word;">
+											<strong>@user.User.DisplayName</strong>
+											<span>
+												<a asp-action="RemoveUser"
+											   asp-route-boardId="@Model?.Id"
+											   asp-route-userId="@user.User.Id"
+											   asp-route-userListSelect="Hidden"
+				  class="text-danger text-decoration-none fs-5" style="cursor: pointer; margin-left: 0.5rem;">
+													<i class="fas fa-trash-alt"></i>
+												</a>
+											</span>
+										</p>
+									</div>
+								}
+							</div>
+
+
+							<div class="form-group form-check form-switch text-white mb-5" data-toggle="tooltip" data-placement="top" title="Mark board as private by checking this option. Archived users do not have access to private Boards.">
+								<label class="form-check-label">
+									@*<input class="form-check-input" asp-for="IsPrivate" id="cbIsPrivate"/>*@
+									@Html.CheckBoxFor(model => model.IsPrivate, new { @class="form-check-input", id = "cbIsPrivate"})     @Html.DisplayNameFor(model => model.IsPrivate)
+									&nbsp;
+								</label>
+								<span id="txtWarning" class="text-warning" style="display:none;" title="Please double check to make sure you intend to set board as private."><i class="fa fa-exclamation-triangle"></i> The board is setting as private.</span>
+							</div>
+
+							<div class="form-group text-center">
+								<input type="submit" value="Save" class="btn btn-success" />
+								<a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to List</a>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-lg-4 col-md-12">
+				<form asp-action="AddUser" asp-route-BoardId="@Model?.Id" class="form-group pt-md-5">
+					<div class="p-5 row justify-content-center pt-0 pb-lg-4">
+						<div class="col-md-12 border-gradient border-gradient-purple" style="padding: 1.5rem;">
+							<h4 class="text-center text-white"><i class="far fa-user"></i> Add User</h4>
+							<div class="form-group mb-2">
+								<label class="control-label text-white" title="Select the user from the list.">Select an User</label>
+								<select name="userId" class="form-control" asp-items="@ViewBag.Users"></select>
+							</div>
+							<div class="form-group mb-3">
+								<label class="control-label text-white" title="Select the role for the above selected user.">Assign a Role</label>
+								<select name="userListSelect" class="form-control">
+									<option value="Observer">Add user as Observer</option>
+									<option value="Member">Add user as Member</option>
+									<option value="Admin">Add user as Administrator</option>
+									<option value="Hidden">Hide from user</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary" title="Add selected user">
+									<i class="fas fa-user-plus"></i>
+								</button>
+							</div>
+
+						</div>
+					</div>
+				</form>
+				<form asp-action="AddLabel" asp-route-BoardId="@Model?.Id" class="form-group">
+					<div class="p-5 row justify-content-center pt-0">
+						<div class="col-md-12 border-gradient border-gradient-purple" style="padding: 1.5rem;">
+							<h4 class="text-center text-white"><i class="fas fa-tag"></i> Add Label</h4>
+							<div class="form-group mb-2">
+								<label class="control-label text-white" title="The title to be displayed on the label.">Label Title</label>
+								<input name="Title" class="form-control" placeholder="ex. Label Name" />
+							</div>
+
+							<div class="form-group mb-3">
+								<label class="control-label text-white" titlE="Pick a color for the label.">Label Colour</label>
+								<input type="color" name="Color" class="form-control form-control-color" value="#f72585" title="Choose the color" />
+							</div>
+							<div class="form-group mb-4">
+								<button type="submit" class="btn btn-primary" title="Add label">
+									<i class="fas fa-tags"></i>
+								</button>
+							</div>
+
+							<h4 class="text-center text-white mb-3">Existing Labels</h4>
+							<div class="form-group mb-1">
+								@foreach (var label in labels)
+								{
+									var labelColor = label.Label.Color;
+									var labelmenu = "labelMenu" + label.Label.Id;
+									<div>
+										<a class="w-75 text-white p-1 card text-decoration-none card-shadow mb-2 me-3" style="background-color:@labelColor;word-break:break-word;border:0.5px #d9d9d9 solid;display:inline-block" asp-action="EditLabel" asp-route-boardId="@Model?.Id" asp-route-LabelId="@label.Label.Id" title="Click to edit label">
+											<strong class="label-text-shadow">@label.Label.Title</strong>
+										</a>
+										@*                                        <a asp-action="EditLabel"
+									asp-route-boardId="@Model?.Id"
+									asp-route-LabelId="@label.Label.Id"
+									class=" fs-5" title="Edit label">
+									<i class="fas fa-pencil-alt"></i>
+									</a>*@
+										<a asp-action="RemoveLabel"
+									   asp-route-boardId="@Model?.Id"
+									   asp-route-LabelId="@label.Label.Id"
+				class="text-danger fs-5" title="Remove label">
+											<i class="fas fa-trash-alt"></i>
+										</a>
+
+									</div>
+								}
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Board Archive Modal-->
+<div class="modal fade" id="boardDeleteModal" tabindex="-1" role="dialog" aria-labelledby="boardDeleteModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h4 class="modal-title">Are you sure you want to archive <br /><strong>@Model.Title</strong>?</h4>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body text-center">
+				<div class="spinner-border text-light" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				@using (Html.BeginForm("Delete", "Boards", FormMethod.Post, new { id = "boardDeleteForm", @class = "" }))
+				{
+					@Html.AntiForgeryToken()
+
+					<input type="submit" value="Archive" id="submitButton" class="btn btn-primary card-shadow" />
+				}
+				<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script>
+		var path_to_delete;
+		var root = location.protocol + "//" + location.host;
+
+		//board delete
+		$("#deleteBoard").click(function (e) {
+			path_to_delete = $(this).data('path');
+			$('#boardDeleteForm').attr('action', root + path_to_delete);
+		});
+	</script>
+	<script type="text/javascript">
+		//show warning message if checkbox is checked
+		$('#cbIsPrivate').change(
+			function (e) {
+				var checked = $(this).is(':checked')
+				if (checked) {
+					$('#txtWarning').show();
+				}
+				else {
+					$('#txtWarning').hide();
+				}
+			}
+		);
+	</script>
+	@{
+
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

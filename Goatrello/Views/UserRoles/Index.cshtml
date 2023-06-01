@@ -1,0 +1,96 @@
+﻿@model IEnumerable<Goatrello.ViewModels.UserVM>
+
+@{
+    ViewBag.Title = "User Roles";
+}
+<div class="pt-4 mb-4">
+    <h2 class="text-white">User Role Assignments</h2>
+</div>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        var isArchived = item.IsArchived;
+        var isAdmin = item.IsAdmin;
+        string cardColor = "ash";
+        string cardText = "text-white";
+        if (isAdmin && !isArchived)
+        {
+            cardColor = "special";
+        }
+        if (isArchived)
+        {
+            cardColor = "bg-secondary";
+            cardText = "text-white-50";
+        }
+        <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
+            <div class="card @cardColor card-shadow h-100 border-0 card-effect">
+                <img src="~/images/profile_blank.png" class="card-img-top" alt="user profile avatar">
+                <div class="card-body">
+                    @*<a asp-action="Edit" asp-route-id="@item.Id" class="text-white float-end" data-toggle="tooltip" data-placement="top" title="Edit User">
+                <i class="far fa-edit white-darker"></i>
+                </a>*@
+                    <h6 class="card-subtitle text-white-50">User Name:</h6>
+                    <p class="card-text @cardText" style="font-size:18px;">@item.UserName</p>
+                    <h6 class="card-subtitle text-white-50">Full Name:</h6>
+                    <p class="card-text @cardText" style="font-size:18px;">@item.DisplayName</p>
+                    <div class="card-text text-white float-end" style="font-size:18px;">
+                        @if (isAdmin)
+                        {
+                            <a asp-action="ToggleAdmin" asp-route-Id="@item.Id" class="card-text text-white text-decoration-none badge bg-success card-shadow" title="Click to remove Admin role from this user.">
+                                <i class="fas fa-crown"></i> @*@Html.CheckBoxFor(modelItem => item.IsAdmin ,new {  @disabled = "disabled", @class="form-check-input"})*@
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="ToggleAdmin" asp-route-Id="@item.Id" class="card-text text-white text-decoration-none badge blur-button card-shadow" title="Click to set this user as Admin.">
+                                <i class="fas fa-crown"></i> @*@Html.CheckBoxFor(modelItem => item.IsAdmin ,new {  @disabled = "disabled", @class="form-check-input"})*@
+                            </a>
+                        }
+                        @if (isArchived)
+                        {
+                            <a asp-action="ToggleArchive" asp-route-Id="@item.Id" class="card-text text-white text-decoration-none badge bg-danger card-shadow" title="Click to Active the user.">
+                                <i class="fas fa-user-slash"></i> @*@Html.CheckBoxFor(modelItem => item.IsArchived ,new {  @disabled = "disabled", @class="form-check-input"})*@
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="ToggleArchive" asp-route-Id="@item.Id" class="card-text text-white text-decoration-none badge blur-button card-shadow" title="Click to Inactive the user.">
+                                <i class="fas fa-user-slash"></i> @*@Html.CheckBoxFor(modelItem => item.IsArchived ,new {  @disabled = "disabled", @class="form-check-input"})*@
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!--A button to scroll back to top of the page-->
+<button onclick="scrollBackToTop()" id="btnBackToTop" title="Back to page top" class="btn blur-button text-white card-shadow" style="position:fixed; bottom:20px; right: 15px; display:none">
+    <span>
+        <i class="fa fa-chevron-up"></i><br />
+        Top
+    </span>
+</button>
+
+@section Scripts {
+	<script>
+		let btnBackToTop = document.getElementById("btnBackToTop");
+		window.onscroll = function () { scrollDownDisplayButton() };
+
+		function scrollDownDisplayButton() {
+			if (document.body.scrollTop > 25 || document.documentElement.scrollTop > 25) {
+				btnBackToTop.style.display = "block"; //display button if user scrolls down 25px from top of the page
+			} else {
+				btnBackToTop.style.display = "none";
+			}
+		}
+
+		// When the user clicks on the button, scroll to the top of the document
+		function scrollBackToTop() {
+			document.body.scrollTop = 0;
+			document.documentElement.scrollTop = 0;
+		}
+	</script>
+}

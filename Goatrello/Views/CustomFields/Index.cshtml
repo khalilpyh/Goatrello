@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Goatrello.Models.CustomField>
+
+@{
+	ViewData["Title"] = "Index";
+}
+
+<div class="pt-4">
+	<h2 class="text-white">Manage Custom Fields</h2>
+</div>
+<p>
+	<a asp-action="Create" class="btn blur-button text-white card-shadow text-decoration-none mb-3">Create New Custom Field</a>
+</p>
+
+<div class="row">
+
+	@foreach (var item in Model)
+	{
+		<div class="col-sm-12 col-md-4 col-lg-3 mb-3">
+			<a class="card card-shadow h-100 text-decoration-none border-0 earth card-effect" asp-action="Edit" asp-route-id="@item.Id" title="Click to edit this Field">
+				<div class="card-body text-white">
+					<h5 class="card-text"><i class="fas fa-puzzle-piece mt-1"></i>
+		<strong>@item.Name</strong>
+
+		</h5>
+				</div>
+				<div class="card-footer text-white border-0">
+					<p class="card-text text-white-50">Type:  @item.FieldDataType</p>
+				</div>
+			</a>
+		</div>
+
+	}
+</div>
+
+<!--A button to scroll back to top of the page-->
+<button onclick="scrollBackToTop()" id="btnBackToTop" title="Back to page top" class="btn blur-button text-white card-shadow" style="position:fixed; bottom:20px; right: 15px; display:none">
+	<span>
+		<i class="fa fa-chevron-up"></i><br />
+		Top
+	</span>
+</button>
+
+@section Scripts {
+		<script>
+			let btnBackToTop = document.getElementById("btnBackToTop");
+			window.onscroll = function () { scrollDownDisplayButton() };
+
+			function scrollDownDisplayButton() {
+				if (document.body.scrollTop > 25 || document.documentElement.scrollTop > 25) {
+					btnBackToTop.style.display = "block"; //display button if user scrolls down 25px from top of the page
+				} else {
+					btnBackToTop.style.display = "none";
+				}
+			}
+
+			// When the user clicks on the button, scroll to the top of the document
+			function scrollBackToTop() {
+				document.body.scrollTop = 0;
+				document.documentElement.scrollTop = 0;
+			}
+		</script>
+}

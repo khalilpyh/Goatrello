@@ -1,0 +1,16 @@
+﻿@model Goatrello.Models.ChecklistItem
+
+@{
+    ViewData["Title"] = "Delete Item";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete @Html.DisplayFor(model => model.Item)</h3>
+<div>   
+    <form asp-action="RemoveItem">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="DeleteItem" class="btn btn-danger" /> |
+        <a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to Card</a>
+    </form>
+</div>

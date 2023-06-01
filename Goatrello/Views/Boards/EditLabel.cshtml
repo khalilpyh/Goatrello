@@ -1,0 +1,42 @@
+﻿@model Goatrello.Models.Label
+
+@{
+	ViewData["Title"] = "Edit Board";
+}
+
+
+<div class="pt-4">
+	<form asp-action="EditLabel" method="post">
+		<input type="hidden" Name="boardId" value="@ViewBag.boardId" />
+		<input type="hidden" asp-for="Id" />
+		<div class="background-darkest card">
+			<div class="p-5 row justify-content-center">
+				<h2 class="text-center text-white">
+					<i class="fas fa-tag"></i> Edit @Model.Title
+				</h2>
+				<hr />
+				<div class="col-md-12 col-lg-8">
+					<p class="text-info">* Required Field</p>
+					<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+					<div class="form-group mb-3">
+						<label class="control-label text-white" title="The title to be displayed on the label.">Label Title</label>
+						<input asp-for="Title" class="form-control" />
+						<span asp-validation-for="Title" class="text-warning"></span>
+					</div>
+					<div class="form-group mb-3">
+						<label class="control-label text-white" title="Pick a color for the label.">Label Colour</label>
+						<input asp-for="Color" type="color" value="@Model.Color" class="form-control form-control-color" />
+					</div>
+
+					<div class="form-group">
+						<input type="submit" value="Save" class="btn btn-success" />
+						<a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to Board Edit</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+
+

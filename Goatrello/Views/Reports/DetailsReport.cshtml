@@ -1,0 +1,87 @@
+@model Goatrello.Models.Report
+
+@{
+	ViewBag.Title = "Report Details";
+}
+
+<!--This is the page after clicking on one of the names on Report Index(Report Center)-->
+<!--A list of clickable report results will be displayed on this page with action buttons beside each one-->
+<!--Click on each result will direct to the specific report detail page shown all the values/numbers...-->
+
+<div class="pt-4">
+	<h2 class="text-white">@Model.Name</h2>
+</div>
+
+<p>
+	<!--Action to generate new report-->
+	<a asp-action="RunReport" asp-route-reportId="@Model.Id" class="btn blur-button text-white card-shadow text-decoration-none mb-3">
+		Run Report
+	</a>
+</p>
+<div class="table-responsive card card-shadow bg-dark p-3 mb-3">
+	<table class="table table-hover table-striped table-dark">
+		<thead>
+			<tr class="text-white">
+				<th>
+					Report Date
+				</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.Results)
+			{
+				<tr>
+					<td>
+						<!--Click to go to result detail page-->
+						<a asp-action="ReportResults" asp-route-reportId="@Model.Id" asp-route-reportResultId="@item.Id" class="text-white text-decoration-none" title="Click on this result to access the detail.">
+							@item.Created.ToString("yyyy_MM_dd_hh_mm_ss")
+						</a>
+					</td>
+					<td>
+						<!--A download button of each record on this page?-->
+						<a class="fs-5 text-decoration-none" title="Download Report result" href="#">
+							<i class="fas fa-file-download text-primary"></i>
+						</a>
+						<!--TODO: modal popup for comfirming delete-->
+						<a asp-action ="RemoveResult" asp-route-reportId="@Model.Id" asp-route-reportResultId="@item.Id" class="fs-5 ps-3" title="Delete Report result">
+							<i class="fas fa-trash-alt text-danger"></i>
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+<div>
+	<a asp-area="" asp-controller="Reports" asp-action="Index" class="btn btn-outline-light">Back to Report Center</a>
+</div>
+
+<!--A button to scroll back to top of the page-->
+<button onclick="scrollBackToTop()" id="btnBackToTop" title="Back to page top" class="btn blur-button text-white card-shadow" style="position:fixed; bottom:20px; right: 15px; display:none">
+	<span>
+		<i class="fa fa-chevron-up"></i><br />
+		Top
+	</span>
+</button>
+
+@section Scripts {
+	<script>
+		let btnBackToTop = document.getElementById("btnBackToTop");
+		window.onscroll = function () { scrollDownDisplayButton() };
+
+		function scrollDownDisplayButton() {
+			if (document.body.scrollTop > 25 || document.documentElement.scrollTop > 25) {
+				btnBackToTop.style.display = "block"; //display button if user scrolls down 25px from top of the page
+			} else {
+				btnBackToTop.style.display = "none";
+			}
+		}
+
+		// When the user clicks on the button, scroll to the top of the document
+		function scrollBackToTop() {
+			document.body.scrollTop = 0;
+			document.documentElement.scrollTop = 0;
+		}
+	</script>
+}

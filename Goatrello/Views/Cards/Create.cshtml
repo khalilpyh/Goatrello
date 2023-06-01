@@ -1,0 +1,83 @@
+﻿@model Goatrello.Models.Card
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet"> <!--For Rich Test Editor-->
+@{
+	ViewData["Title"] = "Create";
+}
+
+<div class="pt-4">
+	<form asp-action="Create">
+		<input type="hidden" name="ListingId" value="@Model.ListingId" />
+		<div class="background-darkest card">
+			<div class="p-5 row justify-content-center">
+				<h2 class="text-center text-white">Create New Card</h2>
+				<hr />
+				<div class="col-md-12 col-lg-8">
+					<p class="text-info">* Required Field</p>
+					<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+					<div class="form-group mb-4">
+						<label asp-for="Title" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The title of the Card. (ex. Card Title)"></label><span class="text-info"> *</span>
+						<input asp-for="Title" class="form-control" placeholder="ex. Card Title" />
+						<span asp-validation-for="Title" class="text-warning"></span>
+					</div>
+					<div class="form-group mb-4">
+						<label asp-for="Description" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The details of the objective."></label>
+						<textarea asp-for="Description" class="form-control"></textarea>
+						<span asp-validation-for="Description" class="text-warning"></span>
+					</div>
+					<div class="form-group mb-4">
+						<label asp-for="DueDate" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="Set a due date for the objective."></label>
+						<input asp-for="DueDate" class="form-control" />
+						<span asp-validation-for="DueDate" class="text-warning"></span>
+					</div>
+@*					<div class="form-group mb-4">
+						<label asp-for="Reminder" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="Set a reminder for the objective."></label>
+						<input asp-for="Reminder" class="form-control" />
+						<span asp-validation-for="Reminder" class="text-warning"></span>
+					</div>*@
+					@*				<div class="form-group form-check mb-2 text-white">
+					<label class="form-check-label">
+					<input class="form-check-input" asp-for="IsDueDateComplete" /> @Html.DisplayNameFor(model => model.IsDueDateComplete)
+					</label>
+					</div>
+					<div class="form-group form-check mb-2 text-white">
+					<label class="form-check-label">
+					<input class="form-check-input" asp-for="IsArchived" /> @Html.DisplayNameFor(model => model.IsArchived)
+					</label>
+					</div>*@
+					<div class="form-group">
+						<input type="submit" value="Create" class="btn btn-success" />
+						<a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to Board</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+	<!--For Rich Text Editor-->
+	<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#Description').summernote({
+				placeholder: 'Add description for the Card here...',
+				height: 200,
+				tabsize: 2,
+				toolbar: [
+					['style', ['style']],
+					['font', ['bold', 'underline', 'clear']],
+					['color', ['color']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['table', ['table']],
+					//['insert', ['link', 'picture']],
+					['view', ['fullscreen']]
+				]
+			});
+		});
+	</script>
+}

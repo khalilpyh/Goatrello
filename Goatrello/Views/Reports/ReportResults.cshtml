@@ -1,0 +1,68 @@
+﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@model Goatrello.Models.ReportResult
+
+@{
+    ViewBag.Title = "Report Results";
+}
+<!-- A hardcoded page for displaying result details-->
+<!-- This page will show up after clicking on one of the report results on DetailsReport View-->
+
+<div class="background-darkest p-4">
+    <div class="pt-4 text-center">
+        <h2 class="text-white">@ViewBag.Report.Name</h2>
+        <h6 class="text-white-50">Date: @Model.Created.ToString("yyyy-MM-dd") at @Model.Created.ToString("h:mm tt")</h6>
+    </div>
+    <p class="text-center light-beige"><strong>-- Begin Report --</strong></p>
+    <hr class="text-white" />
+
+
+    <div class="table-responsive card card-shadow bg-dark p-3 mb-3">
+        <table class="table table-hover table-striped table-dark">
+            <thead>
+                <tr class="text-white">
+                    <th>
+                        Data Name
+                    </th>
+                    <th>
+                        Result
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var json = JObject.Parse(Model.Result);
+                    foreach(var item in json)
+                    {
+                        <tr>
+                            <td>
+                                <a class="text-white text-decoration-none">
+                                    @item.Key
+                                </a>
+                            </td>
+                            <td>
+                                <a class="text-white text-decoration-none">
+                                    @item.Value
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+
+
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="text-white" />
+    <p class="text-center light-beige"><strong>-- End of Report --</strong></p>
+
+    <div class="text-center">
+        <!--Action to Download the result-->
+        <a class="btn btn-primary card-shadow text-white">
+            <i class="fas fa-file-download me-2"></i>Download Report
+        </a>
+        <a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to Result List</a> <!--TODO:Action link to navigate back to Report Index-->
+    </div>
+</div>
+

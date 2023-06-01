@@ -1,0 +1,248 @@
+@model Goatrello.Models.Report
+
+@{
+    ViewBag.Title = "Edit Report";
+    //IQueryable<LabelListLabel> labels = ViewData["Filters"];
+}
+
+<div class="pt-4">
+    <div class="background-darkest card">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <form asp-action="EditReport">
+                    <div class="p-5 row justify-content-center">
+                        <h2 class="text-center text-white mb-lg-5">
+                            Edit @Model.Name
+                            @if (!Model.IsArchived) //display archive button only if report is not archived
+                            {
+                                <a id="deleteReport" class="text-decoration-none fs-4" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#reportDeleteModal" data-path="/Reports/DeleteReport/@Model.Id" title="Archive Report">
+                                    <i class="fas fa-inbox text-danger"></i>
+                                </a>
+                            }
+                        </h2>
+                        <hr />
+                        <div class="col-md-12 col-lg-8">
+                            <p class="text-info">* Required Field</p>
+                            <div asp-validation-summary="ModelOnly" class="text-warning"></div>
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="form-group mb-4">
+                                <label asp-for="Name" class="control-label text-white" title="The name of the report. (ex. Report Name)"></label><span class="text-info"> *</span>
+                                <input asp-for="Name" class="form-control" placeholder="ex. Report Name" />
+                                <span asp-validation-for="Name" class="text-warning"></span>
+                            </div>
+                            <div class="form-group mb-4">
+                                <label asp-for="Filters" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The filter that applies to the report."></label>
+                                @foreach (var filter in Model.Filters)
+                                {
+                                    <div>
+                                        <p class="grape mb-0 w-75" style="word-break:break-word;">
+                                            <strong>@filter.Name</strong>
+                                            <span>
+                                                <a asp-action="RemoveFilter"
+                                               asp-route-reportId="@Model?.Id"
+                                               asp-route-filterId="@filter.Id"
+                                                   class="text-danger text-decoration-none fs-5" style="cursor: pointer; margin-left: 0.5rem;">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </span>
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+                            <div class="form-group mb-4">
+                                <label asp-for="Operations" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The operation that applies to the report."></label>
+                                <!--TODO: Looping through the operations collection and display-->
+                                @foreach (var operation in Model.Operations)
+                                {
+                                    <div>
+                                        <p class="grape mb-0 w-75" style="word-break:break-word;">
+                                            <strong>@operation.Name</strong>
+                                            <span>
+                                                <a asp-action="RemoveOperation"
+                                               asp-route-reportId="@Model?.Id"
+                                               asp-route-operationId="@operation.Id"
+                                                   class="text-danger text-decoration-none fs-5" style="cursor: pointer; margin-left: 0.5rem;">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </span>
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="form-group text-center">
+                                <input type="submit" value="Save" class="btn btn-success" />
+                                <a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to Report Center</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="col-lg-4 col-md-12">
+                <form asp-action="AddFilter"
+                      asp-route-reportId="@Model?.Id"
+                      class="form-group pt-md-5">
+                    <div class="p-5 row justify-content-center pt-0 pb-lg-4">
+                        <div class="col-md-12 border-gradient border-gradient-purple" style="padding: 1.5rem;">
+                            <h4 class="text-center text-white"><i class="fas fa-filter"></i> Add Filter</h4>
+                            <div class="form-group mb-2">
+                                <label class="control-label text-white" title="Select the filter type from the list.">Select a Filter Type</label>
+                                <select id="filterValue" name="filterValue" class="form-control" asp-items="@ViewBag.Filters" onchange="FilterChange()"></select>
+
+                            </div>
+                            <div class="form-group mb-2">
+                                <div id="filterDataBoolDiv" class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <div class="form-check form-switch">
+                                            <input id="dataIn" name="dataIn" type="checkbox" class="form-check-input" value="archived" />&nbsp;&nbsp;Is Archived?
+                                        </div>
+                                    </div>
+                                </div>
+                                <select id="filterDataDDLBoard" name="dataIn" hidden="hidden" asp-items="@ViewBag.FilterBoards" class="form-control"></select>
+                                <select id="filterDataDDLListing" name="dataIn" hidden="hidden" asp-items="@ViewBag.FilterListings" class="form-control"></select>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary" title="Add selected filter type">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                <!--TODO: Link action for add operations-->
+                <form asp-action="AddOperation"
+                      asp-route-reportId="@Model?.Id" 
+                      class="form-group">
+                    <div class="p-5 row justify-content-center pt-0">
+                        <div class="col-md-12 border-gradient border-gradient-purple" style="padding: 1.5rem;">
+                            <h4 class="text-center text-white"><i class="fas fa-calculator"></i> Add Operation</h4>
+                            <div class="form-group mb-2">
+                                <label class="control-label text-white" title="Select the operation type from the list.">Select an Operation Type</label>
+                                <select id="operationValue" name="operationValue" class="form-control" asp-items="@ViewBag.Operations" onchange="OperationChange()"></select>
+                            </div>
+
+                            <div class="form-group mb-2">
+                                <select id="operationCustomField" name="FieldId" asp-items="@ViewBag.CustomFields" class="form-control"></select>
+                                <input id="operationMessage" name="message" hidden="hidden" type="text" class="form-control" placeholder="ex. Static Message" />
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <button type="submit" class="btn btn-primary" title="Add selected operation type">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Archive Modal-->
+<div class="modal fade" id="reportDeleteModal" tabindex="-1" role="dialog" aria-labelledby="reportDeleteModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content blur-modal card-shadow text-white">
+            <div class="modal-header border-0">
+                <h4 class="modal-title">Are you sure you want to archive <br /><strong>@Model.Name</strong>?</h4>
+                <button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+                    <span aria-hidden="true">�</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="spinner-border text-light" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                @using (Html.BeginForm("Delete", "Reports", FormMethod.Post, new { id = "reportDeleteForm", @class = "" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="submit" value="Archive" id="submitButton" class="btn btn-primary card-shadow" />
+                }
+                <button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var path_to_delete;
+        var root = location.protocol + "//" + location.host;
+
+        //board delete
+        $("#deleteReport").click(function (e) {
+            path_to_delete = $(this).data('path');
+            $('#reportDeleteForm').attr('action', root + path_to_delete);
+        });
+    </script>
+
+    <script>
+        function FilterChange() {
+            var filter = document.getElementById("filterValue").value;
+            var dataBool = document.getElementById("filterDataBool")
+            var dataBoolDiv = document.getElementById("filterDataBoolDiv")
+            var dataDDLBoard = document.getElementById("filterDataDDLBoard")
+            var dataDDLListing = document.getElementById("filterDataDDLListing")
+
+            dataBoolDiv.setAttribute('hidden', 'hidden')
+            dataDDLBoard.setAttribute('hidden', 'hidden')
+            dataDDLListing.setAttribute('hidden', 'hidden')
+
+            dataBool.removeAttribute('name')
+            dataDDLBoard.removeAttribute('name')
+            dataDDLListing.removeAttribute('name')
+
+            switch (filter) {
+                case "ByArchive":
+                    dataBoolDiv.removeAttribute('hidden')
+                    dataBool.setAttribute('name', 'DataBool')
+
+                    break;
+                case "ByBoard":
+                    dataDDLBoard.removeAttribute('hidden')
+                    dataDDLBoard.setAttribute('name', 'DataId')
+
+                    break;
+                case "ByListing":
+                    dataDDLListing.removeAttribute('hidden')
+                    dataDDLListing.setAttribute('name', 'DataId')
+                    break;
+            }
+
+        }
+
+    </script>
+    <script>
+        function OperationChange() {
+            var operation = document.getElementById("operationValue").value;
+            var dataField = document.getElementById("operationCustomField")
+            var dataMessage = document.getElementById("operationMessage")
+
+            dataField.setAttribute('hidden', 'hidden')
+            dataMessage.setAttribute('hidden', 'hidden')
+
+            switch (operation) {
+                case "StaticMessage":
+                    dataMessage.removeAttribute('hidden')
+                    break;
+                case "Count":
+                    break;
+                default:
+                    dataField.removeAttribute('hidden')
+                    break;
+            }
+
+        }
+    </script>
+    @{
+
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

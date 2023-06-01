@@ -1,0 +1,275 @@
+﻿@using Microsoft.EntityFrameworkCore.Infrastructure
+@using Azure.Identity
+@model IEnumerable<Goatrello.Models.Listing>
+
+@{
+	ViewData["Title"] = "Index";
+	Board board = (Board)ViewBag.Board;
+	IQueryable<Card> cards = ViewBag.Cards;
+	IQueryable<LabelListLabel> labels = ViewBag.Labels;
+}
+
+<div class="pt-4">
+	<h2 class="text-white">
+		@Html.DisplayFor(model => board.Title)
+		<span @ViewData["IsNotAdmin"]>
+			<a asp-action="Edit" asp-route-id="@board.Id" asp-controller="Boards" class="text-white" style="text-decoration: none; margin-left:0.5rem; font-size:22px;" data-toggle="tooltip" data-placement="top" title="Edit Board">
+				<i class="far fa-edit white-darker"></i>
+			</a>
+		</span>
+	</h2>
+</div>
+
+<form asp-action="Index" method="get">
+	<input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+	<input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+	<input type="hidden" name="BoardId" value="@board.Id" />
+	<div class="form-horizontal">
+		<button class="btn @(ViewData["Filtering"]) card-shadow" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" data-toggle="tooltip" data-placement="top" title="Search/Filter">
+			<i class="fas fa-search"></i> / <i class="fas fa-filter"></i>
+		</button>
+		<span @ViewData["EditPermissions"]>
+			<a asp-action="Create" asp-route-BoardId="@board.Id" asp-route-BoardTitle="@board.Title" asp-controller="Listings" class="btn blur-button text-white card-shadow" style="text-decoration: none; margin-left:0.5rem;">
+				+ Add Another List
+			</a>
+		</span>
+
+		<div class="collapse" id="collapseFilter" style="margin-top: 0.5rem;">
+			<div class="card card-body card-shadow royal text-white col-xl-4 col-lg-6 col-md-8 col-sm-10" style="max-width:74.5%;">
+				<div class="row">
+					<div class="col-md-10">
+						<div class="form-group mb-3">
+							<label class="control-label">Sort By:</label>
+							<div class="input-group">
+								<select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<div class="form-check form-switch">
+											<input type="checkbox" class="form-check-input" value="desc"
+											@((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+												   name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<div class="form-group mb-3">
+							<label class="control-label">Search List Name:</label>
+							@Html.TextBox("searchList", null, new { @class = "form-control", @placeholder = "Enter List Name" })
+						</div>
+					</div>
+					<div class="col-md-10">
+						<div class="form-group mb-3">
+							<label class="control-label">Search Card Name:</label>
+							@Html.TextBox("searchCard", null, new { @class = "form-control", @placeholder = "Enter Card Name" })
+						</div>
+					</div>
+
+					<div class="col-md-10">
+						<div class="form-check form-switch mb-3">
+							<input type="checkbox" class="form-check-input" value="False"
+							@(ViewData["hideCompleted"])
+								   name="hideCompleted" />&nbsp;&nbsp;Hide Completed
+						</div>
+						<div class="form-check form-switch mb-3">
+							<input type="checkbox" class="form-check-input" value="False"
+							@(ViewData["filterOverdue"])
+								   name="filterOverdue" />&nbsp;&nbsp;Show only Overdue Cards
+						</div>
+						<div @ViewData["EditPermissions"] class="form-check form-switch mb-3">
+							<input type="checkbox" class="form-check-input" value="False"
+							@(ViewData["filterTemplates"])
+								   name="filterTemplates" />&nbsp;&nbsp;Show Templates Listing
+						</div>
+
+					</div>
+					<div class="form-group col-md-6 align-self-end mt-1">
+						<input asp-route-BoardId="@board.Id" type="submit" name="actionButton" value="Apply" class="btn btn-success card-shadow" />
+						<a asp-route-BoardId="@board.Id" asp-action="Index" class="btn btn-secondary card-shadow">Clear</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br />
+
+	<div class="row body col right-col d-flex flex-nowrap" style="scroll-snap-type: x mandatory;">
+		@foreach (var item in Model)
+		{
+			<div class="col-lg-3 col-md-6 col-sm-10" style="scroll-snap-align:end;">
+				<div class="card blur-card card-shadow" style="">
+					<div class="card-title" style="margin-top: 1rem;">
+						<h5 class="card-text text-white sticky">
+							@item.Title
+							<span class="float-end" @ViewData["EditPermissions"] @ViewData["TemplatePreserve"] style="padding-right: 1rem;font-size:15px;">
+								<a asp-route-id="@item.Id" asp-action="Edit" class="text-light text-decoration-none" title="Edit List">
+									<i class="far fa-edit white-darker"></i>
+								</a>
+							</span>
+						</h5>
+						@if (cards.Where(c => c.ListingId == item.Id).Count() > 1) //check for how many cards contained in the list
+						{
+							<p class="card-text sticky white-darker" style="font-size:13px;">@cards.Where(c => c.ListingId == item.Id).Count() cards included</p>
+						}
+						else
+						{
+							<p class="card-text sticky white-darker" style="font-size:13px;">@cards.Where(c => c.ListingId == item.Id).Count() card included</p>
+						}
+
+					</div>
+					<div class="scrollable-card-body" style="scroll-snap-type: y mandatory;">
+						<div class="card-body" >
+							@foreach (var c in cards.Where(c => c.ListingId == item.Id))
+							{
+								string cardColor = "kashmir";
+								if (c.IsArchived)		//change card bg color to grey if card is archived
+								{
+									cardColor = "bg-secondary";
+								}
+
+								<div class="card mb-2" style="scroll-snap-align:end;">
+									<a asp-action="Details" asp-controller="Cards" asp-route-id="@c.Id" class="text-white @cardColor card-shadow card-effect" style="text-decoration: none; padding-left:1rem; padding-top: 0.5rem;padding-right:1rem;min-height:100px;border-radius:0.25rem;">
+										@if (labels.Any() && c.Labels != null && labels.Where(l => l.ListId == c.Labels.Id).Any()) //check for Labels
+										{
+											foreach (var l in labels.Where(l => l.ListId == c.Labels.Id))
+											{
+												if (l.Label.Title.Length > 15)
+												{
+													<div class="badge label-text-shadow me-1" style="background-color: @l.Label.Color; width: 2rem;" title="@l.Label.Title.Substring(0,15)...">
+													</div>
+												}
+												else
+												{
+													<div class="badge label-text-shadow me-1" style="background-color: @l.Label.Color;  width: 2rem;" title="@l.Label.Title">
+													</div>
+												}
+											}
+										}
+										<p class="card-text light-beige mb-4">@c.Title</p>
+										<div class="mb-2">
+											@if (c.DueDate.HasValue) //check for due date value
+											{
+												if (!c.IsDueDateComplete) //check for completion
+												{
+													if (c.Reminder.HasValue && c.Reminder.GetValueOrDefault().TotalHours != 0 && c.DueDate >= DateTime.Now)
+													{
+														<span class="badge text-white reminder-badge" title="Reminder is set, complete as soon as possible."><i class="fas fa-stopwatch"></i></span>
+													}
+
+													if (c.DueDate < DateTime.Now)
+													{
+														<p class="badge bg-danger text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="Overdue.">
+															<i class="far fa-clock"></i> @c.DueDate.GetValueOrDefault().ToString("MMM dd")
+														</p>
+													}
+													else if (c.DueDate >= DateTime.Now && c.DueDate < DateTime.Now.AddDays(7))
+													{
+														<p class="badge bg-warning text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="Due soon.">
+															<i class="far fa-clock"></i> @c.DueDate.GetValueOrDefault().ToString("MMM dd")
+														</p>
+													}
+													else
+													{
+														<p class="badge bg-info text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="Upcoming.">
+															<i class="far fa-clock"></i> @c.DueDate.GetValueOrDefault().ToString("MMM dd")
+														</p>
+													}
+												}
+												else
+												{
+													<span class="badge bg-success text-white" style="margin-bottom: 0.5rem;" data-toggle="tooltip" data-placement="top" title="Completed.">
+														<s>
+															<i class="far fa-clock"></i> @c.DueDate.GetValueOrDefault().ToString("MMM dd")
+														</s> &#10003;
+													</span>
+												}
+											}
+											@if (!String.IsNullOrEmpty(c.Description)) //check for description
+											{
+												<p class="badge bg-transparent text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="This card has a description.">
+													<i class="far fa-file-alt"></i>
+												</p>
+											}
+											@if (c.Checklists.Any() && (c.Checklists.Where(ch => !ch.IsArchived).Any())) //check for checklists
+											{
+												<p class="badge bg-transparent text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="This card contains checklists.">
+													<i class="fas fa-tasks"></i>
+												</p>
+											}
+											@if (c.Attachments.Any() && (c.Attachments.Where(att => !att.IsArchived).Any())) //check for attachments
+											{
+												<p class="badge bg-transparent text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="This card contains attachments.">
+													<i class="fas fa-paperclip"></i>
+												</p>
+											}
+											@if (c.Links.Any() && (c.Links.Where(l => !l.IsArchived).Any())) //check for links
+											{
+												<p class="badge bg-transparent text-white" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="This card contains links.">
+													<i class="fas fa-link"></i>
+												</p>
+											}
+										</div>
+									</a>
+								</div>
+							}
+						</div>
+					</div>
+					<div class="card-footer border-0" @ViewData["EditPermissions"]>
+						<a class="text-white" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor:pointer; font-size: 18px; text-decoration:none;" title="Choose to create a blank card or from existing template">
+							+ Add New Card
+						</a>
+						<div class="dropdown-menu blue-purple card-shadow">
+							<a asp-action="Create" asp-route-ListingId="@item.Id" asp-controller="Cards"
+			 class="dropdown-item text-white" aria-haspopup="true" aria-expanded="false" title="Create new blank card">New Blank Card</a>
+							@if (((HashSet<Card>)ViewBag.templates).Count > 0) //if there are templates, populate them into menu
+							{
+								<div class="dropdown-divider border-light"></div>
+								<a class="dropdown-item text-white-50 disabled">Select from Template</a>
+								@foreach (var t in ViewBag.templates)
+								{
+									<a asp-action="CreateFromTemplate" asp-route-TemplateId="@t.Id" asp-route-ListingId="@item.Id" asp-controller="Cards"
+					 class="dropdown-item text-white" aria-haspopup="true" aria-expanded="false" title="Create new card from this template">@t.Title</a>
+								}
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</form>
+
+@section Scripts {
+	<script>
+		var path_to_delete;
+		var root = location.protocol + "//" + location.host;
+
+		//listing delete
+		$("#deleteListing").click(function (e) {
+			path_to_delete = $(this).data('path');
+			$('#listingDeleteForm').attr('action', root + path_to_delete);
+		});
+	</script>
+	<!--For fixing dropdown menu overflow issue-->
+	<script>
+		$(document).on('shown.bs.dropdown', function () {
+			$open_menu = $(document).find('.dropdown-menu.show');
+			$open_menu.closest('.card').css("z-index", "500");
+		});
+		$(document).on('hide.bs.dropdown', function () {
+			$open_menu = $(document).find('.dropdown-menu.show');
+			$open_menu.closest('.card').css("z-index", "1");
+		});
+	</script>
+	<!--initialize popover-->
+	<script>
+		var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+		var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+			return new bootstrap.Popover(popoverTriggerEl)
+		})
+	</script>
+}

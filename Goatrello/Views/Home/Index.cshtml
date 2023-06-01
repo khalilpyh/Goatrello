@@ -1,0 +1,62 @@
+﻿@using Goatrello.Services
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+	ViewData["Title"] = "Home Page";
+}
+@{
+	bool showAdmin = false;
+	if (User.Identity.IsAuthenticated)
+	{
+		var user = await GoatAuthorize.CreateFromContext(Context);
+		showAdmin = user.IsSiteAdmin;
+	}
+}
+
+<div class="p-5" style="margin-top: 15rem;">
+	<div class="text-center text-white">
+		<div class="typewriter">
+			<div class="display-4 fw-bold typed-out mb-2">Welcome to Goatrello</div>
+		</div>
+		<h6 class="fade-in-message">A revised and more efficient software to replace Trello&reg;, exclusively for <a href="https://soiloptix.com/" target="_blank"><img src="~/images/SoilOptix_Logo.jpg" alt="SoilOptix company logo" width="80" height="25" /></a>&reg;</h6>
+	</div>
+	<div class="p-4">
+		<div class="row">
+			@if (showAdmin)  //display manage user role button if site admin
+			{
+				<div class="col-sm-12 col-md-4 mb-4">
+					<a class="text-white btn btn-lg transparent-btn btn-outline-light fade-in-message fade-in-one card-shadow" asp-area="" asp-controller="Boards" asp-action="Index" title="Check out all the boards.">
+						<i class="fas fa-eye"></i>
+						View All Boards
+					</a>
+				</div>
+				<div class="mb-4 col-md-4 col-sm-12">
+					<a class="text-white btn btn-lg transparent-btn btn-outline-light fade-in-message fade-in-two card-shadow" asp-area="" asp-controller="Boards" asp-action="Create" title="Click to create a new board.">
+						<i class="fas fa-folder-plus"></i>
+						Create New Board
+					</a>
+				</div>
+				<div class="mb-4 col-md-4 col-sm-12">
+					<a class="text-white btn btn-lg transparent-btn btn-outline-light fade-in-message fade-in-three card-shadow" asp-area="" asp-controller="UserRoles" asp-action="Index" title="Click to manage users and assign roles.">
+						<i class="fas fa-user-tag"></i>
+						Manage User Roles
+					</a>
+				</div>
+			}
+			else  //hide manage user role if not site admin
+			{
+				<div class="col-sm-12 col-md-6 mb-4">
+					<a class="text-white btn btn-lg transparent-btn btn-outline-light fade-in-message fade-in-one card-shadow" asp-area="" asp-controller="Boards" asp-action="Index" title="Check out all the boards.">
+						<i class="fas fa-eye"></i>
+						View All Boards
+					</a>
+				</div>
+				<div class="mb-4 col-md-6 col-sm-12">
+					<a class="text-white btn btn-lg transparent-btn btn-outline-light fade-in-message fade-in-two card-shadow" asp-area="" asp-controller="Boards" asp-action="Create" title="Click to create a new board.">
+						<i class="fas fa-folder-plus"></i>
+						Create New Board
+					</a>
+				</div>
+			}
+		</div>
+	</div>
+</div>

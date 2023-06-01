@@ -1,0 +1,87 @@
+﻿@model Goatrello.Models.CustomField
+
+@{
+	ViewData["Title"] = "Edit";
+}
+
+<div class="pt-4">
+	<form asp-action="Edit">
+		<input type="hidden" asp-for="Id" />
+		<div class="background-darkest card">
+			<div class="p-5 row justify-content-center">
+				<h2 class="text-center text-white">
+					Edit @Model.Name
+					<a id="deleteCustomField" class="text-decoration-none fs-4" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#customFieldDeleteModal" data-path="/CustomFields/Delete/@Model?.Id" title="Archive Custom Field">
+						<i class="fas fa-inbox text-danger"></i>
+					</a>
+				</h2>
+				<hr />
+
+				<div class="col-md-12 col-lg-8">
+					<p class="text-info">* Required Field</p>
+					<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+
+					<div class="form-group mb-4">
+						<label asp-for="Name" class="control-label text-white" title="The name of the Custom Field. (ex. Field Name)"></label><span class="text-info"> *</span>
+						<input asp-for="Name" class="form-control" placeholder="ex. Field Name" />
+						<span asp-validation-for="Name" class="text-warning"></span>
+					</div>
+					<div class="form-group mb-4">
+						<label asp-for="FieldDataType" class="control-label text-white" title="Select the type of the Field from the list."></label>
+						<select asp-for="FieldDataType" class="form-control" asp-items="Html.GetEnumSelectList<FieldDataType>()"></select>
+						<span asp-validation-for="FieldDataType" class="text-warning"></span>
+					</div>
+					<div class="form-group">
+						<input type="submit" value="Save" class="btn btn-success card-shadow" />
+						<a asp-action="Index" class="btn btn-outline-light card-shadow">Back to List</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+<!-- Custom Field Archive Modal-->
+<div class="modal fade" id="customFieldDeleteModal" tabindex="-1" role="dialog" aria-labelledby="customFieldDeleteModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h4 class="modal-title">Are you sure you want to archive <br /><strong>@Model.Name</strong>?</h4>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body text-center">
+				<div class="spinner-border text-light" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				@using (Html.BeginForm("Delete", "CustomFields", FormMethod.Post, new { id = "customFieldDeleteForm", @class = "" }))
+				{
+					@Html.AntiForgeryToken()
+
+					<input type="submit" value="Archive" id="submitButton" class="btn btn-danger" />
+				}
+				<button class="btn btn-outline-light" type="button" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script>
+		var path_to_delete;
+		var root = location.protocol + "//" + location.host;
+		//custom field delete
+		$("#deleteCustomField").click(function (e) {
+			path_to_delete = $(this).data('path');
+			$('#customFieldDeleteForm').attr('action', root + path_to_delete);
+		});
+	</script>
+}

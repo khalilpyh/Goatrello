@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="Database" Label="GoatrelloData.db" Category="Database" Group="Expanded" />
+    <Node Id="Activities" Label="Activities" Category="Table" Group="Collapsed" />
+    <Node Id="Activities_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Activities_CardId" Label="CardId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Activities_AuthorId" Label="AuthorId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Activities_Created" Label="Created" Category="Field" Description="text" />
+    <Node Id="Activities_IsEdited" Label="IsEdited" Category="Field" Description="bigint" />
+    <Node Id="Activities_IsRecord" Label="IsRecord" Category="Field" Description="bigint" />
+    <Node Id="Activities_Content" Label="Content" Category="Field" Description="text" />
+    <Node Id="Attachments" Label="Attachments" Category="Table" Group="Collapsed" />
+    <Node Id="Attachments_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Attachments_CardId" Label="CardId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Attachments_ServerFileId" Label="ServerFileId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Attachments_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="Boards" Label="Boards" Category="Table" Group="Collapsed" />
+    <Node Id="Boards_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Boards_Title" Label="Title" Category="Field" Description="text" />
+    <Node Id="Boards_LabelsId" Label="LabelsId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Boards_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="Boards_AdministratorsId" Label="AdministratorsId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Boards_MembersId" Label="MembersId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Boards_ObserversId" Label="ObserversId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Boards_HiddenFromId" Label="HiddenFromId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Boards_IsPrivate" Label="IsPrivate" Category="Field" Description="bigint" />
+    <Node Id="Cards" Label="Cards" Category="Table" Group="Collapsed" />
+    <Node Id="Cards_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Cards_ListingId" Label="ListingId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Cards_Title" Label="Title" Category="Field" Description="text" />
+    <Node Id="Cards_Description" Label="Description" Category="Field Optional" Description="text" />
+    <Node Id="Cards_UsersId" Label="UsersId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Cards_LabelsId" Label="LabelsId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Cards_DueDate" Label="DueDate" Category="Field Optional" Description="text" />
+    <Node Id="Cards_Reminder" Label="Reminder" Category="Field Optional" Description="text" />
+    <Node Id="Cards_IsDueDateComplete" Label="IsDueDateComplete" Category="Field" Description="bigint" />
+    <Node Id="Cards_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="ChecklistItems" Label="ChecklistItems" Category="Table" Group="Collapsed" />
+    <Node Id="ChecklistItems_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="ChecklistItems_ChecklistId" Label="ChecklistId" Category="Field Foreign" Description="bigint" />
+    <Node Id="ChecklistItems_Item" Label="Item" Category="Field" Description="text" />
+    <Node Id="ChecklistItems_IsChecked" Label="IsChecked" Category="Field" Description="bigint" />
+    <Node Id="ChecklistItems_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="Checklists" Label="Checklists" Category="Table" Group="Collapsed" />
+    <Node Id="Checklists_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Checklists_CardId" Label="CardId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Checklists_Title" Label="Title" Category="Field" Description="text" />
+    <Node Id="Checklists_IsShowHidden" Label="IsShowHidden" Category="Field" Description="bigint" />
+    <Node Id="Checklists_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="LabelListLabels" Label="LabelListLabels" Category="Table" Group="Collapsed" />
+    <Node Id="LabelListLabels_ListId" Label="ListId" Category="Field Primary" Description="bigint" />
+    <Node Id="LabelListLabels_LabelId" Label="LabelId" Category="Field Primary" Description="bigint" />
+    <Node Id="LabelLists" Label="LabelLists" Category="Table" Group="Collapsed" />
+    <Node Id="LabelLists_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Labels" Label="Labels" Category="Table" Group="Collapsed" />
+    <Node Id="Labels_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Labels_Title" Label="Title" Category="Field" Description="text" />
+    <Node Id="Labels_Color" Label="Color" Category="Field" Description="text" />
+    <Node Id="Labels_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="Labels_LabelListId" Label="LabelListId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Links" Label="Links" Category="Table" Group="Collapsed" />
+    <Node Id="Links_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Links_CardId" Label="CardId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Links_Uri" Label="Uri" Category="Field" Description="text" />
+    <Node Id="Links_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="Listings" Label="Listings" Category="Table" Group="Collapsed" />
+    <Node Id="Listings_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Listings_BoardId" Label="BoardId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Listings_Title" Label="Title" Category="Field" Description="text" />
+    <Node Id="Listings_ObserversId" Label="ObserversId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Listings_HiddenFromId" Label="HiddenFromId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Listings_IsPrivate" Label="IsPrivate" Category="Field" Description="bigint" />
+    <Node Id="Listings_IsTemplate" Label="IsTemplate" Category="Field" Description="bigint" />
+    <Node Id="ServerFiles" Label="ServerFiles" Category="Table" Group="Collapsed" />
+    <Node Id="ServerFiles_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="ServerFiles_Title" Label="Title" Category="Field" Description="text" />
+    <Node Id="ServerFiles_FileType" Label="FileType" Category="Field Optional" Description="text" />
+    <Node Id="ServerFiles_ThumbnailGuid" Label="ThumbnailGuid" Category="Field Optional" Description="text" />
+    <Node Id="ServerFiles_FileGuid" Label="FileGuid" Category="Field" Description="text" />
+    <Node Id="ServerFiles_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+    <Node Id="UserLists" Label="UserLists" Category="Table" Group="Collapsed" />
+    <Node Id="UserLists_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="UserListUsers" Label="UserListUsers" Category="Table" Group="Collapsed" />
+    <Node Id="UserListUsers_ListId" Label="ListId" Category="Field Primary" Description="bigint" />
+    <Node Id="UserListUsers_UserId" Label="UserId" Category="Field Primary" Description="bigint" />
+    <Node Id="Users" Label="Users" Category="Table" Group="Collapsed" />
+    <Node Id="Users_Id" Label="Id" Category="Field Primary" Description="bigint" />
+    <Node Id="Users_FirstName" Label="FirstName" Category="Field" Description="text" />
+    <Node Id="Users_LastName" Label="LastName" Category="Field" Description="text" />
+    <Node Id="Users_ProfilePictureId" Label="ProfilePictureId" Category="Field Foreign" Description="bigint" />
+    <Node Id="Users_IsArchived" Label="IsArchived" Category="Field" Description="bigint" />
+  </Nodes>
+  <Links>
+    <Link Source="Database" Target="Activities" Category="Contains" />
+    <Link Source="Activities" Target="Activities_Id" Category="Contains" />
+    <Link Source="Activities" Target="Activities_CardId" Category="Contains" />
+    <Link Source="Activities" Target="Activities_AuthorId" Category="Contains" />
+    <Link Source="Activities" Target="Activities_Created" Category="Contains" />
+    <Link Source="Activities" Target="Activities_IsEdited" Category="Contains" />
+    <Link Source="Activities" Target="Activities_IsRecord" Category="Contains" />
+    <Link Source="Activities" Target="Activities_Content" Category="Contains" />
+    <Link Source="Activities_AuthorId" Target="Users_Id" Label="FK_Activities_0_0" Category="Foreign Key" />
+    <Link Source="Activities_CardId" Target="Cards_Id" Label="FK_Activities_1_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Attachments" Category="Contains" />
+    <Link Source="Attachments" Target="Attachments_Id" Category="Contains" />
+    <Link Source="Attachments" Target="Attachments_CardId" Category="Contains" />
+    <Link Source="Attachments" Target="Attachments_ServerFileId" Category="Contains" />
+    <Link Source="Attachments" Target="Attachments_IsArchived" Category="Contains" />
+    <Link Source="Attachments_ServerFileId" Target="ServerFiles_Id" Label="FK_Attachments_0_0" Category="Foreign Key" />
+    <Link Source="Attachments_CardId" Target="Cards_Id" Label="FK_Attachments_1_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Boards" Category="Contains" />
+    <Link Source="Boards" Target="Boards_Id" Category="Contains" />
+    <Link Source="Boards" Target="Boards_Title" Category="Contains" />
+    <Link Source="Boards" Target="Boards_LabelsId" Category="Contains" />
+    <Link Source="Boards" Target="Boards_IsArchived" Category="Contains" />
+    <Link Source="Boards" Target="Boards_AdministratorsId" Category="Contains" />
+    <Link Source="Boards" Target="Boards_MembersId" Category="Contains" />
+    <Link Source="Boards" Target="Boards_ObserversId" Category="Contains" />
+    <Link Source="Boards" Target="Boards_HiddenFromId" Category="Contains" />
+    <Link Source="Boards" Target="Boards_IsPrivate" Category="Contains" />
+    <Link Source="Boards_ObserversId" Target="UserLists_Id" Label="FK_Boards_0_0" Category="Foreign Key" />
+    <Link Source="Boards_MembersId" Target="UserLists_Id" Label="FK_Boards_1_0" Category="Foreign Key" />
+    <Link Source="Boards_HiddenFromId" Target="UserLists_Id" Label="FK_Boards_2_0" Category="Foreign Key" />
+    <Link Source="Boards_AdministratorsId" Target="UserLists_Id" Label="FK_Boards_3_0" Category="Foreign Key" />
+    <Link Source="Boards_LabelsId" Target="LabelLists_Id" Label="FK_Boards_4_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Cards" Category="Contains" />
+    <Link Source="Cards" Target="Cards_Id" Category="Contains" />
+    <Link Source="Cards" Target="Cards_ListingId" Category="Contains" />
+    <Link Source="Cards" Target="Cards_Title" Category="Contains" />
+    <Link Source="Cards" Target="Cards_Description" Category="Contains" />
+    <Link Source="Cards" Target="Cards_UsersId" Category="Contains" />
+    <Link Source="Cards" Target="Cards_LabelsId" Category="Contains" />
+    <Link Source="Cards" Target="Cards_DueDate" Category="Contains" />
+    <Link Source="Cards" Target="Cards_Reminder" Category="Contains" />
+    <Link Source="Cards" Target="Cards_IsDueDateComplete" Category="Contains" />
+    <Link Source="Cards" Target="Cards_IsArchived" Category="Contains" />
+    <Link Source="Cards_UsersId" Target="UserLists_Id" Label="FK_Cards_0_0" Category="Foreign Key" />
+    <Link Source="Cards_ListingId" Target="Listings_Id" Label="FK_Cards_1_0" Category="Foreign Key" />
+    <Link Source="Cards_LabelsId" Target="LabelLists_Id" Label="FK_Cards_2_0" Category="Foreign Key" />
+    <Link Source="Database" Target="ChecklistItems" Category="Contains" />
+    <Link Source="ChecklistItems" Target="ChecklistItems_Id" Category="Contains" />
+    <Link Source="ChecklistItems" Target="ChecklistItems_ChecklistId" Category="Contains" />
+    <Link Source="ChecklistItems" Target="ChecklistItems_Item" Category="Contains" />
+    <Link Source="ChecklistItems" Target="ChecklistItems_IsChecked" Category="Contains" />
+    <Link Source="ChecklistItems" Target="ChecklistItems_IsArchived" Category="Contains" />
+    <Link Source="ChecklistItems_ChecklistId" Target="Checklists_Id" Label="FK_ChecklistItems_0_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Checklists" Category="Contains" />
+    <Link Source="Checklists" Target="Checklists_Id" Category="Contains" />
+    <Link Source="Checklists" Target="Checklists_CardId" Category="Contains" />
+    <Link Source="Checklists" Target="Checklists_Title" Category="Contains" />
+    <Link Source="Checklists" Target="Checklists_IsShowHidden" Category="Contains" />
+    <Link Source="Checklists" Target="Checklists_IsArchived" Category="Contains" />
+    <Link Source="Checklists_CardId" Target="Cards_Id" Label="FK_Checklists_0_0" Category="Foreign Key" />
+    <Link Source="Database" Target="LabelListLabels" Category="Contains" />
+    <Link Source="LabelListLabels" Target="LabelListLabels_ListId" Category="Contains" />
+    <Link Source="LabelListLabels" Target="LabelListLabels_LabelId" Category="Contains" />
+    <Link Source="LabelListLabels_LabelId" Target="Labels_Id" Label="FK_LabelListLabels_0_0" Category="Foreign Key" />
+    <Link Source="LabelListLabels_ListId" Target="LabelLists_Id" Label="FK_LabelListLabels_1_0" Category="Foreign Key" />
+    <Link Source="Database" Target="LabelLists" Category="Contains" />
+    <Link Source="LabelLists" Target="LabelLists_Id" Category="Contains" />
+    <Link Source="Database" Target="Labels" Category="Contains" />
+    <Link Source="Labels" Target="Labels_Id" Category="Contains" />
+    <Link Source="Labels" Target="Labels_Title" Category="Contains" />
+    <Link Source="Labels" Target="Labels_Color" Category="Contains" />
+    <Link Source="Labels" Target="Labels_IsArchived" Category="Contains" />
+    <Link Source="Labels" Target="Labels_LabelListId" Category="Contains" />
+    <Link Source="Labels_LabelListId" Target="LabelLists_Id" Label="FK_Labels_0_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Links" Category="Contains" />
+    <Link Source="Links" Target="Links_Id" Category="Contains" />
+    <Link Source="Links" Target="Links_CardId" Category="Contains" />
+    <Link Source="Links" Target="Links_Uri" Category="Contains" />
+    <Link Source="Links" Target="Links_IsArchived" Category="Contains" />
+    <Link Source="Links_CardId" Target="Cards_Id" Label="FK_Links_0_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Listings" Category="Contains" />
+    <Link Source="Listings" Target="Listings_Id" Category="Contains" />
+    <Link Source="Listings" Target="Listings_BoardId" Category="Contains" />
+    <Link Source="Listings" Target="Listings_Title" Category="Contains" />
+    <Link Source="Listings" Target="Listings_ObserversId" Category="Contains" />
+    <Link Source="Listings" Target="Listings_HiddenFromId" Category="Contains" />
+    <Link Source="Listings" Target="Listings_IsPrivate" Category="Contains" />
+    <Link Source="Listings" Target="Listings_IsTemplate" Category="Contains" />
+    <Link Source="Listings_ObserversId" Target="UserLists_Id" Label="FK_Listings_0_0" Category="Foreign Key" />
+    <Link Source="Listings_HiddenFromId" Target="UserLists_Id" Label="FK_Listings_1_0" Category="Foreign Key" />
+    <Link Source="Listings_BoardId" Target="Boards_Id" Label="FK_Listings_2_0" Category="Foreign Key" />
+    <Link Source="Database" Target="ServerFiles" Category="Contains" />
+    <Link Source="ServerFiles" Target="ServerFiles_Id" Category="Contains" />
+    <Link Source="ServerFiles" Target="ServerFiles_Title" Category="Contains" />
+    <Link Source="ServerFiles" Target="ServerFiles_FileType" Category="Contains" />
+    <Link Source="ServerFiles" Target="ServerFiles_ThumbnailGuid" Category="Contains" />
+    <Link Source="ServerFiles" Target="ServerFiles_FileGuid" Category="Contains" />
+    <Link Source="ServerFiles" Target="ServerFiles_IsArchived" Category="Contains" />
+    <Link Source="Database" Target="UserLists" Category="Contains" />
+    <Link Source="UserLists" Target="UserLists_Id" Category="Contains" />
+    <Link Source="Database" Target="UserListUsers" Category="Contains" />
+    <Link Source="UserListUsers" Target="UserListUsers_ListId" Category="Contains" />
+    <Link Source="UserListUsers" Target="UserListUsers_UserId" Category="Contains" />
+    <Link Source="UserListUsers_UserId" Target="Users_Id" Label="FK_UserListUsers_0_0" Category="Foreign Key" />
+    <Link Source="UserListUsers_ListId" Target="UserLists_Id" Label="FK_UserListUsers_1_0" Category="Foreign Key" />
+    <Link Source="Database" Target="Users" Category="Contains" />
+    <Link Source="Users" Target="Users_Id" Category="Contains" />
+    <Link Source="Users" Target="Users_FirstName" Category="Contains" />
+    <Link Source="Users" Target="Users_LastName" Category="Contains" />
+    <Link Source="Users" Target="Users_ProfilePictureId" Category="Contains" />
+    <Link Source="Users" Target="Users_IsArchived" Category="Contains" />
+    <Link Source="Users_ProfilePictureId" Target="ServerFiles_Id" Label="FK_Users_0_0" Category="Foreign Key" />
+  </Links>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Table" ValueLabel="True">
+      <Condition Expression="HasCategory('Table')" />
+      <Setter Property="Background" Value="#FFC0C0C0" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Schema" ValueLabel="True">
+      <Condition Expression="HasCategory('Schema')" />
+      <Setter Property="Background" Value="#FF7F9169" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field Primary" ValueLabel="True">
+      <Condition Expression="HasCategory('Field Primary')" />
+      <Setter Property="Background" Value="#FF008000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field Optional" ValueLabel="True">
+      <Condition Expression="HasCategory('Field Optional')" />
+      <Setter Property="Background" Value="#FF808040" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field Foreign" ValueLabel="True">
+      <Condition Expression="HasCategory('Field Foreign')" />
+      <Setter Property="Background" Value="#FF8080FF" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field" ValueLabel="True">
+      <Condition Expression="HasCategory('Field')" />
+      <Setter Property="Background" Value="#FFC0A000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Database" ValueLabel="True">
+      <Condition Expression="HasCategory('Database')" />
+      <Setter Property="Background" Value="#FFFFFFFF" />
+    </Style>
+  </Styles>
+</DirectedGraph>

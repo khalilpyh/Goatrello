@@ -1,0 +1,648 @@
+html {
+    font-size: 14px;
+    scroll-behavior: smooth;
+}
+
+h2 {
+    display: inline-block;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.container .body {
+    overflow-y: hidden;
+    overflow-x: scroll;
+    width: 100%;
+    height: 75vh;
+}
+
+.scroll {
+}
+
+.card-container {
+    background-color: #adb5bd;
+    padding: 5px 5px 5px 5px;
+    border-radius: 5px;
+    width: 300px;
+}
+
+    .card-container a {
+        text-decoration: none;
+        color: #000000;
+    }
+
+.btn-board {
+    background-color: #adb5bd;
+    padding: 5px 5px 5px 5px;
+    border-radius: 5px;
+    width: 300px;
+    height: 120px;
+    outline: 0;
+}
+
+    .btn-board:hover {
+        background-color: #fdfdfe;
+        outline: 3px;
+        border: solid #adb5bd;
+    }
+
+.board-title {
+    float: left;
+    margin: 0 0 70px 10px;
+}
+
+.col-board {
+    width: 25%;
+}
+
+.new-board {
+    background-color: #cfe2ff;
+}
+
+    .new-board:hover {
+        background-color: #86b7fe;
+        border: none;
+    }
+
+.card-title {
+    float: left;
+    margin: 5px 0 0 25px;
+}
+
+.col-sm {
+    height: auto;
+    margin-bottom: 10px;
+    float: left;
+    width: 25%;
+    display: inline-block;
+}
+
+.col-sm-6 {
+    width: 330px;
+}
+
+/*.card-body{
+    max-height: 600px;
+    overflow-y: auto;
+}*/
+
+.btn-lg {
+    background-color: #cfe2ff;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 100%;
+    width: 95%;
+    margin: 10px 0 10px 5px;
+}
+
+.cardbtn {
+    padding: 25px;
+}
+
+.board-card {
+    height: 8rem;
+}
+
+.transparent-btn {
+    background-color: transparent;
+}
+
+    .transparent-btn:hover {
+        color: black !important;
+    }
+
+.btn-sm {
+    width: 100%;
+    background-color: #4f5050;
+    border: none;
+    height: 30px;
+}
+
+    .btn-sm:hover {
+        background-color: #6c757d;
+    }
+
+.btn-title {
+    background-color: #adb5bd;
+    border-radius: 20px;
+    border-color: #4f5050;
+    border-width: 1px;
+    height: 40px;
+    margin: 5px 0 0 5px;
+    padding: 0 0 5px 0;
+    width: 80%;
+}
+
+    .btn-title:hover {
+        background-color: #6c757d;
+    }
+
+.btn-offcanvas {
+    flex-direction: column;
+    flex: 0 0 100%;
+    width: 90%;
+}
+
+.d-flex {
+    padding-top: 5px;
+    width: 300px;
+    float: right;
+    margin-right: 10px;
+}
+
+.filter {
+    height: 50px;
+    background-color: #adb5bd;
+    border-radius: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.filters {
+    display: inline-block;
+    width: 25%;
+}
+
+.filter-card {
+    float: right;
+}
+
+svg {
+    float: right;
+    margin: 5px 20px 0 0;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    overflow-x: auto;
+    background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),url('../images/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.row {
+    --bs-gutter-y: 0; /* Override default gutter for fixing form-float input label padding */
+}
+
+/*Custom Color effect Added by Yuhao */
+.card-shadow {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.shadow-grey {
+    background-color: #2C303E; /* fallback color */
+    background-image: linear-gradient(to bottom, #2C303E, #5C6176, #8D94AB);
+}
+
+.blue-purple {
+    background: linear-gradient(to right, #4568dc, #b06ab3);
+    border: none;
+}
+
+.celestial {
+    background: linear-gradient(to right, #c33764, #1d2671);
+    border: none;
+}
+
+.almost {
+    background: linear-gradient(to right, #ddd6f3, #faaca8);
+    border: none;
+}
+
+.royal {
+    background: linear-gradient(to right, #141e30, #243b55);
+    border: none;
+}
+
+.special {
+    background-color: #1e88e5; /* fallback color */
+    background-image: linear-gradient(to bottom right, #1e88e5, #2196f3, #3f51b5);
+}
+
+.ash {
+    background: linear-gradient(to right, #606c88, #3f4c6b);
+    border: none;
+}
+
+.silver-sand {
+    background: #EAD2A8;
+}
+
+.sea-blue {
+    background: linear-gradient(90deg, #2b5876, #4e4376);
+    border: none;
+}
+
+.white-darker {
+    color: #E1D9D1
+}
+
+.light-beige {
+    color: #f5f5dc;
+}
+
+.frost {
+    color: #185a9d;
+}
+
+.grape {
+    color: #B24BF3;
+}
+
+.kashmir {
+    background: linear-gradient(to right, #614385, #516395);
+    border: none;
+}
+
+.scooter {
+    background: linear-gradient(45deg, #36d1dc, #5b86e5);
+    border: none;
+}
+
+.grass {
+    background: linear-gradient(to right, #83D475, #2EB62C);
+    border: none;
+}
+
+.sunset {
+    background: linear-gradient(to right, #FDA766, #FF6200);
+    border: none;
+}
+
+.socialive {
+    background: linear-gradient(45deg, #06beb6, #48b1bf);
+    border: none;
+}
+
+.earth {
+    background: linear-gradient(135deg, rgb(67, 54, 74), rgb(47, 48, 67));
+}
+
+.blur-card {
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+}
+
+.blur-button {
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+}
+
+    .blur-button:hover {
+        background-color: darkgrey;
+    }
+
+.blur-identity {
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(70px);
+}
+
+.ocean {
+    background: linear-gradient(to right, #1550c5, #1045a5);
+}
+
+    .ocean:hover {
+        background: linear-gradient(to right, #1c64f2, #1c8af2);
+    }
+
+.post-comment-btn, .move-card-btn {
+    background-color: #6C2DC7;
+    color: white;
+}
+
+    .post-comment-btn:hover, .move-card-btn:hover {
+        background-color: #9E5FF9;
+    }
+
+
+.blur-background {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.blur-modal {
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(35px);
+}
+
+.background-dark {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5))
+}
+
+.background-darkest {
+    background: linear-gradient(rgba(0, 0, 0, 70), rgba(0, 0, 0, 0.70))
+}
+
+.bg-offcanvas {
+    background: linear-gradient(to bottom right, #2c3e50, #1a262f);
+}
+
+
+/* Scrollable card body and hide the scroll bar Added by Yuhao*/
+.scrollable-card-body {
+    overflow-y: auto;
+    max-height: 50vh;
+    scrollbar-width: none; /* FireFox */
+    -ms-overflow-style: none; /* IE, Edge */
+}
+
+    .scrollable-card-body::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, .15);
+    border-radius: 2px;
+    backdrop-filter: blur(5px);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #4568dc, #b06ab3);
+    border-radius: 2px;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, #b06ab3, #e39dcd);
+    }
+
+/* For Rich Text Editor edit area background color */
+.note-editable {
+    background-color: #fff;
+}
+
+/* Pagination */
+.pagination > li > button {
+    background: linear-gradient(to right, #141e30, #243b55);
+    color: #fff;
+    border-color: grey;
+}
+
+    .pagination > li > button:focus,
+    .pagination > li > button:hover,
+    .pagination > li > span:focus,
+    .pagination > li > span:hover {
+        color: #fff;
+        background: linear-gradient(45deg, #06beb6, #48b1bf);
+        border-color: #ddd;
+    }
+
+.pagination > .active > button {
+    color: #fff;
+    background: linear-gradient(45deg, #4568dc, #b06ab3) !important;
+    border: solid 1px #fff !important;
+}
+
+    .pagination > .active > button:hover {
+        color: #fff;
+        background: linear-gradient(45deg, #06beb6, #48b1bf) !important;
+        border-color: #ddd !important;
+    }
+
+/* Type writter effect*/
+.typed-out {
+    overflow: hidden;
+    border-right: .15em solid orange;
+    white-space: nowrap;
+    width: 0;
+    animation: typing 1.5s steps(30, end) forwards, blink 1.3s infinite;
+}
+
+.typewriter {
+    display: inline-block;
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink {
+    from {
+        border-color: transparent
+    }
+
+    to {
+        border-color: orange;
+    }
+}
+
+/* Fade in text*/
+.fade-in-message {
+    /*    animation: fadeIn ease 10s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;*/
+    opacity: 0;
+    -webkit-animation: fading ease-in 1s;
+    animation: fading ease-in 1s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-delay: 1.5s;
+    animation-delay: 1.5s;
+}
+
+.fade-in-one {
+    -webkit-animation-delay: 2s;
+    animation-delay: 2s
+}
+
+.fade-in-two {
+    -webkit-animation-delay: 2.7s;
+    animation-delay: 2.7s
+}
+
+.fade-in-three {
+    -webkit-animation-delay: 3.2s;
+    animation-delay: 3.2s
+}
+
+@-webkit-keyframes fading {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes fading {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fading {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* For Gradient Border Effect*/
+.border-gradient {
+    border: 2px solid;
+    border-image-slice: 1;
+    border-width: 2px;
+}
+
+.border-gradient-purple {
+    border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
+}
+
+.activity-border {
+    border: 1px solid;
+    border-image-slice: 1;
+    border-width: 2px;
+}
+
+.activity-border-purple {
+    border-image-source: linear-gradient(to right,#d53a9d,rgba(255,0,0,0));
+}
+
+
+.only-bottom-border {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+/* For Accordion style*/
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ce58f5'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-button.collapsed::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%235bc0de'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+
+/* For label style*/
+.label-text-shadow {
+    /* text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4), 2px 2px 10px rgba(0, 0, 0, 0.3), -1px -1px 5px rgba(0, 0, 0, 0.4), -2px -2px 10px rgba(0, 0, 0, 0.3);*/
+    text-shadow: 0 0 2px rgba(255,255,255,0.1), 0 0 2px rgba(0,0,0,1.0);
+}
+
+/* For canvas buttons */
+.offcanvas-icon-button {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+/* Override Dropdown Menu width */
+.dropdown-menu {
+    min-width: 1rem;
+}
+
+/* Hoverable side button */
+.btn-side-hoverable {
+    position: fixed; /* Position them relative to the browser window */
+    right: -7.5rem; /* Position them outside of the screen */
+    transition: 0.3s; /* Add transition on hover */
+    top: 45%;
+    background: linear-gradient(to right, #1550c5, #1045a5);
+    border: none;
+}
+
+    .btn-side-hoverable:hover {
+        right: 0;
+        background: linear-gradient(to right, #1c64f2, #1c8af2);
+    }
+
+/* Jump Links*/
+/* styling sidebar */
+.sidehoverbar {
+    top: 19rem;
+    position: fixed;
+    left: -170px;
+    transition: 0.5s;
+    opacity: 0.5;
+}
+
+    .sidehoverbar:hover {
+        left: 0px;
+        opacity: 1;
+    }
+
+    /* float icons*/
+    .sidehoverbar i {
+        float: right;
+    }
+
+/* defining position of each nav bar */
+.jumplink-button {
+    width: 210px;
+}
+
+/* Glowing effect*/
+.reminder-badge {
+    -webkit-animation: glowing 1300ms infinite;
+    -moz-animation: glowing 1300ms infinite;
+    -o-animation: glowing 1300ms infinite;
+    animation: glowing 1300ms infinite;
+}
+
+@keyframes glowing {
+    0% {
+        background-color: #ff6600;
+        box-shadow: 0 0 5px #ff6600;
+    }
+
+    50% {
+        background-color: #ffbd3d;
+        box-shadow: 0 0 20px #ffbd3d;
+    }
+
+    100% {
+        background-color: #ff6600;
+        box-shadow: 0 0 5px #ff6600;
+    }
+}
+
+/* For card member badge*/
+.member-button {
+    width: 3rem;
+}
+
+/* For card comment hide and show */
+.hidden-comment {
+    display: none;
+}
+
+.card-effect:hover {
+    box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+}

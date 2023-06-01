@@ -1,0 +1,38 @@
+﻿@model Goatrello.Models.Board
+
+
+@{
+	ViewData["Title"] = "Create New Board";
+}
+
+<div class="pt-4">
+	<div class="background-darkest card">
+		<div class="p-5 row justify-content-center">
+			<h2 class="text-white text-center">Create New Board</h2>
+			<hr />
+			<div class="col-md-12 col-lg-8">
+				<form asp-action="Create">
+					<p class="text-info">* Required Field</p>
+					<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+					<div class="form-group mb-4">
+						<label asp-for="Title" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="The title of the Board. (ex. Board Name)"></label><span class="text-info"> *</span>
+						<input asp-for="Title" class="form-control" placeholder="ex. Board Name" />
+						<span asp-validation-for="Title" class="text-warning"></span>
+					</div>
+
+					<div class="form-group">
+						<input type="submit" value="Create" class="btn btn-success" />
+						<a href='@ViewData["returnURL"]' class="btn btn-outline-light">Back to Board List</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

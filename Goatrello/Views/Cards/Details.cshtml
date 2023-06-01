@@ -1,0 +1,1669 @@
+﻿@using Goatrello.Services;
+@using Microsoft.IdentityModel.Tokens
+@using System.Web;
+@model Goatrello.Models.Card
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet"> <!--For Rich Test Editor-->
+@{
+	ViewData["Title"] = "Details";
+	IQueryable<Card> cards = ViewBag.Cards;
+	IQueryable<LabelListLabel> labels = ViewBag.Labels;
+	IQueryable<LabelListLabel> boardLabels = ViewBag.BoardLabels;
+}
+
+<div class="pt-4">
+	<div class="p-3">
+		<div class="text-center sea-blue card card-shadow pt-2 sticky-top mb-2">
+			<h2 class="mb-2 text-white">
+				<strong>
+					@if (Model.Listing.IsTemplate) //display [Template] label for card template
+					{
+						<span>[Template]</span>
+
+						@Model.Title
+						;
+					}
+					else
+					{
+						@Model.Title
+						;
+					}
+				</strong>
+				<span @ViewData["WriteProtect"]>
+					<a class="text-decoration-none text-white-50 ms-2 fs-4" title="Edit card title" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#editTitleModal" data-path="/Cards/Edit/@Model?.Id"><i class="far fa-edit"></i></a>
+				</span>
+			</h2>
+			<h6 class="mb-3 white-darker">in list <strong>@Model.Listing.Title</strong></h6>
+		</div>
+		<!--Title Model-->
+		<div class="modal fade" id="editTitleModal" tabindex="-1" role="dialog" aria-labelledby="editTitleModal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content blur-modal card-shadow text-white">
+					<div class="modal-header border-0">
+						<h3 class="modal-title">Card Title</h3>
+						<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form asp-action="Edit">
+							<input type="hidden" name="Id" value="@Model.Id" />
+							<input type="hidden" name="editType" value="title" />
+							<div class="row justify-content-center">
+								<div class="col-lg-12">
+									<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+									<div class="form-group mb-4">
+										<input asp-for="Title" class="form-control" placeholder="ex. Card Title" required />
+										<span asp-validation-for="Title" class="text-warning"></span>
+									</div>
+									<div class="form-group float-end">
+										<input type="submit" value="Save" class="btn btn-success  card-shadow" />
+										<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+									</div>
+
+								</div>
+
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="p-2 text-center mb-4" id="topEditButtonGroup">
+		@if (!Model.IsArchived) //only show archive button if card is not archived
+		{
+			<a id="deleteCard" class="text-decoration-none btn btn-danger" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#cardDeleteModal" data-path="/Cards/Delete/@Model?.Id" title="Archive Card" @ViewData["WriteProtect"]>
+				<i class="fas fa-inbox text-white"></i>
+			</a>
+		}
+		<button class="btn blur-button text-white card-shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#cardMoreActionOffcanvas" title="More actions" @ViewData["WriteProtect"]>
+			@*            <i class="fas fa-ellipsis-h"></i>*@
+			More Actions
+		</button>
+		<a href='@ViewData["returnURL"]' class="btn btn-outline-light card-shadow">Back to Board</a>
+	</div>
+
+	<div class="bg-dark card card-shadow pt-3 pb-3 accordion accordion-borderless border-0" id="cardDetailAccordion">
+		<!--Description Accordion-->
+		<div class="accordion-item bg-dark border-0" id="accordion-item-description">
+			<h5 class="accordion-header" id="description">
+				<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4" data-bs-toggle="collapse" data-bs-target="#collapseDescription" aria-expanded="true" aria-controls="collapseDescription" style="cursor:pointer;">
+					<i class="far fa-file-alt me-2"></i>Description
+				</a>
+			</h5>
+			<div id="collapseDescription" class="accordion-collapse collapse show" aria-labelledby="description">
+				@if (!String.IsNullOrEmpty(Model.Description))
+				{
+					<span @ViewData["WriteProtect"]>
+						<a id="editDescription" class="text-decoration-none text-white-50 float-end pe-4" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#descriptionEditModal" data-path="/Cards/Edit/@Model?.Id" title="Edit Description"><i class="far fa-edit"></i></a>
+					</span>
+					<div class="text-white accordion-body" style="white-space: pre-line">@Html.Raw(HttpUtility.HtmlDecode(Model.Description))</div> <!--decode raw content and render as html tags-->
+				}
+				else
+				{
+					<span>
+						<a id="editDescription" class="text-decoration-none text-white-50 float-end pe-4" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#descriptionEditModal" data-path="/Cards/Edit/@Model?.Id" title="Add Description"><i class="fas fa-plus"></i></a>
+					</span>
+					<div class="text-white-50 accordion-body" style="white-space: pre-line">No content to display.</div>
+
+				}
+				<!--Description Model-->
+				<div class="modal fade" id="descriptionEditModal" tabindex="-1" role="dialog" aria-labelledby="descriptionEditModal" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
+						<div class="modal-content blur-modal card-shadow text-white">
+							<div class="modal-header border-0">
+								<h3 class="modal-title">Card Description</h3>
+								<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+									<span aria-hidden="true">×</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<form asp-action="Edit">
+									<input type="hidden" name="Id" value="@Model.Id" />
+									<input type="hidden" name="editType" value="description" />
+									<div class="row justify-content-center">
+										<div class="col-lg-12">
+											@*													<p class="text-info">* Required Field</p>*@
+											<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+											<div class="form-group mb-3">
+												@*														<label asp-for="Description" class="control-label text-white" title="The details of the objective."></label>*@
+												<textarea asp-for="Description" class="form-control"></textarea>
+												<span asp-validation-for="Description" class="text-warning"></span>
+											</div>
+											<div class="form-group float-end">
+												<input type="submit" value="Save" class="btn btn-success  card-shadow" />
+												<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+											</div>
+
+										</div>
+
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--Labels Accordion-->
+		@if (labels.Any() && Model.Labels != null)
+		{
+			<div class="accordion-item bg-dark border-0" id="accordion-item-label">
+				<h5 class="accordion-header" id="labels">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4 border-0" data-bs-toggle="collapse" data-bs-target="#collapseLabels" aria-expanded="true" aria-controls="collapseLabels" style="cursor:pointer;">
+						<i class="fas fa-tag me-2"></i>Labels
+					</a>
+				</h5>
+				<div id="collapseLabels" class="accordion-collapse collapse show" aria-labelledby="labels">
+					<div class="accordion-body">
+						@foreach (var label in boardLabels)
+						{
+							if (labels.Any(l => l.LabelId == label.LabelId))
+							{
+								<div class="btn-group">
+									<a class="text-white p-1 card text-decoration-none card-shadow mb-2 me-2 card-effect" style="background-color:@label.Label.Color;word-break:break-word;border:0.5px #d9d9d9 solid;display:inline-block" href="#" role="button" id="labelDeleteMenu" data-bs-toggle="dropdown" aria-expanded="false" title="Click and select to remove label from card">
+										<strong class="label-text-shadow ">@label.Label.Title</strong>
+									</a>
+									<ul class="dropdown-menu dropdown-menu-start" aria-labelledby="labelDeleteMenu" @ViewData["WriteProtect"]>
+										<li>
+											<a asp-action="RemoveLabel" asp-route-cardId="@Model?.Id" asp-route-LabelId="@label.Label.Id" class="dropdown-item text-black" style="cursor:pointer" title="Remove lable from card">
+												Remove
+											</a>
+										</li>
+									</ul>
+								</div>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+
+		<!--Members Accordion-->
+		@if (Model.Users != null && Model.Users.Users.Any())
+		{
+			<div class="accordion-item bg-dark border-0" id="accordion-item-member">
+				<h5 class="accordion-header" id="members">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4 border-0" data-bs-toggle="collapse" data-bs-target="#collapseMembers" aria-expanded="true" aria-controls="collapseMembers" style="cursor:pointer;">
+						<i class="fas fa-user me-2"></i>Members
+					</a>
+				</h5>
+				<div id="collapseMembers" class="accordion-collapse collapse show" aria-labelledby="labels">
+					<div class="accordion-body">
+						@foreach (var user in Model.Users.Users)
+						{
+							<div class="btn-group mb-2">
+								<a class="text-white p-2 btn ash rounded-circle text-decoration-none card-shadow mb-2 me-2 member-button card-effect" href="#" role="button" id="memberDeleteMenu" data-bs-toggle="dropdown" aria-expanded="false" title="@user.User.DisplayName (Click and select to remove this Member)">
+									<strong class="">
+										@(
+											String.Concat(user.User.DisplayName.Split(" ").Select(w => w[0]))
+											)
+									</strong>
+								</a>
+								<ul class="dropdown-menu dropdown-menu-start" aria-labelledby="memberDeleteMenu" @ViewData["WriteProtect"]>
+									<li>
+										<a class="dropdown-item disabled" style="cursor:pointer" title="Remove member from card">
+											<i class="fas fa-user me-2"></i>@user.User.DisplayName
+										</a>
+										<a asp-action="RemoveUser" asp-route-cardId="@Model?.Id" asp-route-userId="@user.UserId" class="dropdown-item text-black" style="cursor:pointer" title="Remove user from card">
+											Remove
+										</a>
+									</li>
+								</ul>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+		@{
+			DateTime? dueDate = Model.DueDate;
+			TimeSpan? reminder = Model.Reminder;
+		}
+
+		<!--Due Date Accordion-->
+		@if (dueDate.HasValue)
+		{
+			double remindHours = Model.Reminder.GetValueOrDefault().TotalHours / 24;  //get the remaining time in hours
+
+
+
+			<div class="accordion-item bg-dark border-0" id="accordion-item-duedate">
+				<h5 class="accordion-header" id="duedate">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4  border-0" data-bs-toggle="collapse" data-bs-target="#collapseDueDate" aria-expanded="true" aria-controls="collapseDueDate" style="cursor:pointer;">
+						<i class="far fa-clock me-2"></i>Due Date
+					</a>
+				</h5>
+				<div id="collapseDueDate" class="accordion-collapse show" aria-labelledby="duedate">
+					<p class="text-white accordion-body">
+						@Model.DueDate.GetValueOrDefault().ToString("yyyy-MM-dd") at @Model.DueDate.GetValueOrDefault().ToString("h:mm tt")
+						@if (!Model.IsDueDateComplete)
+						{
+							if (Model.DueDate < DateTime.Now)
+							{
+								<span class="badge bg-danger text-white card-shadow">Overdue</span>
+							}
+							else if (Model.DueDate >= DateTime.Now && Model.DueDate < DateTime.Now.AddDays(7))
+							{
+								<span class="badge bg-warning text-white card-shadow">Due Soon</span>
+							}
+							else
+							{
+								<span class="badge bg-info text-white card-shadow">Upcoming</span>
+							}
+
+							if (Model.Reminder.HasValue && Model.Reminder.GetValueOrDefault().TotalHours != 0)  //check for reminder
+							{
+								if (remindHours > 24)
+								{
+									var time = remindHours / 24;
+									<span class="badge text-white card-shadow" title="Reminder is set, access the side menu to modify reminder" style="background-color: #6C2DC7;"><i class="fas fa-stopwatch me-1"></i>@time Days</span>
+								}
+								else
+								{
+									<span class="badge text-white card-shadow" title="Reminder is set, access the side menu to modify reminder" style="background-color: #6C2DC7;"><i class="fas fa-stopwatch me-1"></i>@remindHours H</span>
+								}
+
+								if (Model.DueDate >= DateTime.Now)  //only display the countdown if it is not overdue
+								{
+									<span id="countdown" class="badge text-white card-shadow reminder-badge" title="Complete as soon as possible!"></span>
+								}
+
+							}
+						}
+						else
+						{
+							<span class="badge bg-success text-white card-shadow">Completed</span>
+						}
+						<span @ViewData["WriteProtect"]>
+							<a id="editDueDate" class="text-decoration-none text-white-50 float-end pe-4" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#editDueDateModal" data-path="/Cards/Edit/@Model?.Id" title="Edit Due Date"><i class="far fa-edit"></i></a>
+						</span>
+					</p>
+				</div>
+			</div>
+
+		}
+		<!--Due Date Model-->
+		<div class="modal fade" id="editDueDateModal" tabindex="-1" role="dialog" aria-labelledby="editDueDateModal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content blur-modal card-shadow text-white">
+					<div class="modal-header border-0">
+						<h3 class="modal-title">Card Due Date</h3>
+						<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form asp-action="Edit">
+							<input type="hidden" name="Id" value="@Model.Id" />
+							<input type="hidden" name="editType" value="dueDate" />
+							<div class="row justify-content-center">
+								<div class="col-lg-12">
+									<div asp-validation-summary="ModelOnly" class="text-warning"></div>
+									<div class="form-group mb-3">
+										@*										<label asp-for="DueDate" class="control-label text-white" data-toggle="tooltip" data-placement="top" title="Set a due date for the objective."></label>*@
+										<input asp-for="DueDate" class="form-control" />
+										<span asp-validation-for="DueDate" class="text-warning"></span>
+									</div>
+									@if (Model.DueDate.HasValue)
+									{
+										<div class="form-group form-check form-switch text-white mb-4" data-toggle="tooltip" data-placement="top" title="Mark objective as completed by checking this option.">
+											<label class="form-check-label">
+												<input class="form-check-input" asp-for="IsDueDateComplete" /> @Html.DisplayNameFor(model => model.IsDueDateComplete)
+											</label>
+										</div>
+									}
+									<div class="form-group float-end">
+										<input type="submit" value="Save" class="btn btn-success  card-shadow" />
+										<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--Checklists Accordion-->
+		@if (Model.Checklists.Any() && (Model.Checklists.Where(ch => !ch.IsArchived).Any()))
+		{
+			<div class="accordion-item bg-dark border-0" id="accordion-item-checklist">
+				<h5 class="accordion-header" id="checklists">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4 border-0" data-bs-toggle="collapse" data-bs-target="#collapseChecklists" aria-expanded="true" aria-controls="collapseChecklists" style="cursor:pointer;">
+						<i class="fas fa-tasks me-2"></i>Checklists
+					</a>
+				</h5>
+				<div id="collapseChecklists" class="accordion-collapse show" aria-labelledby="checklists">
+					<div class="accordion-body">
+						@foreach (Checklist list in Model.Checklists.Where(c => c.IsArchived != true))
+						{
+							int totalItems = list.ChecklistItems.Count;
+							int checkedItems = list.ChecklistItems.Where(c => c.IsChecked).Count();
+							int percentComplete = 0;
+
+							if (list.ChecklistItems.Any())
+							{
+								percentComplete = (int)Math.Round((double)(100 * checkedItems) / totalItems);  //count for percentage of checklist completion
+							}
+							<div>
+								<p class="mb-1 text-white">
+									@using (Html.BeginForm("Delete", "Checklists", new { id = list.Id }))
+									{
+										var removeChecklistModal = "removeChecklistModal" + list.Id; //generate an id for the modal
+										<i class="fas fa-map-marker-alt light-beige"></i>
+										<div class="btn-group dropend">
+											<a class="text-white text-decoration-none pb-1 fs-5" href="#" role="button" id="checklistEditMenu" data-bs-toggle="dropdown" aria-expanded="false" title="Click to edit or remove the item." style="margin-left: 0.5rem;">
+												<strong class="text-white"> @Html.DisplayFor(modelItem => list.Title)</strong>
+											</a>
+											<ul class="dropdown-menu" aria-labelledby="checklistEditMenu" @ViewData["WriteProtect"]>
+												<li>
+													<a asp-action="Edit" asp-controller="Checklists" asp-route-Id="@list.Id" class="dropdown-item text-black">
+														Edit
+													</a>
+												</li>
+												<li>
+													<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@removeChecklistModal">
+														Remove
+													</a>
+												</li>
+											</ul>
+										</div>
+
+										<!--Remove Checklist Modal-->
+										<div class="modal fade" id="@removeChecklistModal" tabindex="-1" role="dialog" aria-labelledby="@removeChecklistModal" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered" role="document">
+												<div class="modal-content blur-modal card-shadow text-white">
+													<div class="modal-header border-0">
+														<h4 class="modal-title">Are you sure you want to remove <br /> <strong>@list.Title</strong>?</h4>
+														<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+															<span aria-hidden="true">×</span>
+														</button>
+													</div>
+													<div class="modal-body text-center">
+														<div class="spinner-border text-light" role="status">
+															<span class="sr-only">Loading...</span>
+														</div>
+													</div>
+													<div class="modal-footer border-0">
+														<input type="submit" value="Remove" class="btn btn-danger card-shadow" />
+														<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									}
+									@if (list.ChecklistItems.Any() && (list.ChecklistItems.Where(i => !i.IsArchived).Any()))
+									{
+										if (percentComplete >= 25 && percentComplete < 50)
+										{
+											<div class="progress w-75 mt-1 card-shadow">
+												<div class="progress-bar sunset w-25" role="progressbar" aria-valuenow="@percentComplete" aria-valuemin="0" aria-valuemax="100">
+													@percentComplete%
+												</div>
+											</div>
+										}
+										else if (percentComplete >= 50 && percentComplete < 75)
+										{
+											<div class="progress w-75 mt-1 card-shadow">
+												<div class="progress-bar scooter w-50" role="progressbar" aria-valuenow="@percentComplete" aria-valuemin="0" aria-valuemax="100">
+													@percentComplete%
+												</div>
+											</div>
+										}
+										else if (percentComplete >= 75 && percentComplete < 100)
+										{
+											<div class="progress w-75 mt-1 card-shadow">
+												<div class="progress-bar scooter w-75" role="progressbar" aria-valuenow="@percentComplete" aria-valuemin="0" aria-valuemax="100">
+													@percentComplete%
+												</div>
+											</div>
+										}
+										else if (percentComplete >= 100)
+										{
+											<div class="progress w-75 mt-1 card-shadow">
+												<div class="progress-bar grass w-100" role="progressbar" aria-valuenow="@percentComplete" aria-valuemin="0" aria-valuemax="100">
+													@percentComplete%
+												</div>
+											</div>
+										}
+										else
+										{
+											<div class="progress w-75 mt-1 card-shadow">
+												<div class="progress-bar sunset w-0" role="progressbar" aria-valuenow="@percentComplete" aria-valuemin="0" aria-valuemax="100">
+													@percentComplete%
+												</div>
+											</div>
+										}
+									}
+								</p>
+								@foreach (var checkbox in list.ChecklistItems.Where(c => c.IsArchived != true))
+								{
+									@using (Html.BeginForm("RemoveItem", "Checklists", new { id = checkbox.Id }))
+									{
+										var removeItemModal = "removeItemModal" + checkbox.Id; //generate an id for the modal
+										if (!checkbox.IsChecked)
+										{
+											<div class="mb-1 text-white" style="font-size: 15px;">
+												&nbsp;
+												<a asp-action="ToggleItem" asp-controller="Checklists" asp-route-Id="@checkbox.Id" class="text-white text-decoration-none" title="Click to Check or Uncheck the item.">
+													@*													&#x2022;*@
+													@Html.CheckBoxFor(modelItem => checkbox.IsChecked,new { @disabled = "disabled", @class="form-check-input"})
+													@checkbox.Item
+												</a>
+
+												<div class="btn-group dropend" style="margin-left: 0.8rem;" @ViewData["WriteProtect"]>
+													<a class="text-white-50 text-decoration-none" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" title="Choose to edit or remove the item." style="margin-left: 0.5rem;">
+														<i class="far fa-edit"></i>
+													</a>
+													<ul class="dropdown-menu bg-light" aria-labelledby="dropdownMenuLink">
+														<li>
+															<a asp-action="EditItem" asp-controller="Checklists" asp-route-Id="@checkbox.Id" class="dropdown-item text-black">
+																Edit Item
+															</a>
+														</li>
+														<li>
+															<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@removeItemModal">
+																Remove Item
+															</a>
+															@*											<a asp-action="RemoveItem" asp-controller="Checklists" asp-route-Id="@checkbox.Id" class="dropdown-item text-black">
+										Remove
+										</a>*@
+														</li>
+													</ul>
+												</div>
+											</div>
+										}
+										else
+										{
+											<div class="mb-1 text-white" style="font-size: 15px;">
+												&nbsp;
+												<s>
+													<a asp-action="ToggleItem" asp-controller="Checklists" asp-route-Id="@checkbox.Id" class="text-white-50 text-decoration-none" title="Click to Check or Uncheck the item.">
+														@*													&#x2022;*@
+														@Html.CheckBoxFor(modelItem => checkbox.IsChecked,new { @disabled = "disabled", @class="form-check-input"})
+														@checkbox.Item
+													</a>
+												</s>
+												<div class="btn-group dropend" style="margin-left: 0.8rem;" @ViewData["WriteProtect"]>
+													<a class="text-white-50 text-decoration-none" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" title="Choose to edit or remove the item." style="margin-left: 0.5rem;">
+														<i class="far fa-edit"></i>
+													</a>
+													<ul class="dropdown-menu bg-light" aria-labelledby="dropdownMenuLink">
+														<li>
+															<a asp-action="EditItem" asp-controller="Checklists" asp-route-Id="@checkbox.Id" class="dropdown-item text-black">
+																Edit Item
+															</a>
+														</li>
+														<li>
+															<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@removeItemModal">
+																Remove Item
+															</a>
+														</li>
+													</ul>
+												</div>
+											</div>
+										}
+										<!--Remove Checklist Item Modal-->
+										<div class="modal fade" id="@removeItemModal" tabindex="-1" role="dialog" aria-labelledby="@removeItemModal" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered" role="document">
+												<div class="modal-content blur-modal card-shadow text-white">
+													<div class="modal-header border-0">
+														<h4 class="modal-title">
+															Are you sure you want to remove
+															<br /> <strong>@checkbox.Item</strong>
+															<br>from <strong>@list.Title</strong>?
+														</h4>
+														<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+															<span aria-hidden="true">×</span>
+														</button>
+													</div>
+													<div class="modal-body text-center">
+														<div class="spinner-border text-light" role="status">
+															<span class="sr-only">Loading...</span>
+														</div>
+													</div>
+													<div class="modal-footer border-0">
+														<input type="submit" value="Remove" class="btn btn-danger card-shadow" />
+														<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									}
+								}
+							</div>
+							<div @ViewData["WriteProtect"]>
+								&nbsp;
+								<a asp-action="AddItem" asp-controller="Checklists" asp-route-ChecklistId="@list.Id" asp-route-CardId="@Model?.Id" class="btn blur-button text-white mb-2 card-shadow" title="Add item to the checklist.">
+									+ Add Item
+								</a>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+		<!--Attachments Accordion-->
+		@if (Model.Attachments.Any() && (Model.Attachments.Where(att => !att.IsArchived).Any())) //check for attachments
+		{
+			<div class="accordion-item bg-dark border-0" id="accordion-item-attachment">
+				<h5 class="accordion-header" id="attachments">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4  border-0" data-bs-toggle="collapse" data-bs-target="#collapseAttachments" aria-expanded="true" aria-controls="collapseAttachments" style="cursor:pointer;">
+						<i class="fas fa-paperclip me-2"></i>Attachments
+					</a>
+				</h5>
+				<div id="collapseAttachments" class="accordion-collapse collapse show" aria-labelledby="attachments">
+					<div class="accordion-body">
+						@foreach (var attachment in Model.Attachments)
+						{
+							if (!attachment.IsArchived)
+							{
+								<div>
+									<div class="text-white mb-1">
+										@Html.DisplayFor(modelItem => attachment.ServerFile.Title)
+										<div class="btn-group dropend">
+											<a class="text-decoration-none text-white-50 ps-2" style="cursor:pointer;" href="#" role="button" id="attachmentEditMenu" data-bs-toggle="dropdown" aria-expanded="false" title="Choose to download or archive attachment."><i class="far fa-edit"></i></a>
+
+											<ul class="dropdown-menu" aria-labelledby="attachmentEditMenu">
+												<li>
+													<a asp-action="Download" asp-route-Id="@attachment.ServerFileId" class="dropdown-item text-black" style="cursor:pointer">
+														Download
+													</a>
+												</li>
+												<li>
+													<a asp-action="ArchiveFile" asp-route-Id="@attachment.ServerFileId" class="dropdown-item text-black" style="cursor:pointer">
+														Archive
+													</a>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							}
+
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+		<!--Links Accordion-->
+		@if (Model.Links.Any() && (Model.Links.Where(l => !l.IsArchived).Any())) //check for links
+		{
+			<div class="accordion-item bg-dark border-0" id="accordion-item-link">
+				<h5 class="accordion-header" id="links">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4  border-0" data-bs-toggle="collapse" data-bs-target="#collapseLinks" aria-expanded="true" aria-controls="collapseLinks" style="cursor:pointer;">
+						<i class="fas fa-link me-2"></i>Links
+					</a>
+				</h5>
+				<div id="collapseLinks" class="accordion-collapse collapse show" aria-labelledby="links">
+					<div class="accordion-body">
+						@foreach (var link in Model.Links.Where(l => l.IsArchived != true))
+						{
+							<div>
+								<div class="text-white mb-1">
+									<a href="@link.Uri" target="_blank" style="color:#fcb483;">@link.Uri</a>
+									<div class="btn-group dropend" @ViewData["WriteProtect"]>
+										<a class="text-decoration-none text-white-50 ps-2" style="cursor:pointer;" href="#" role="button" id="linkEditMenu" data-bs-toggle="dropdown" aria-expanded="false" title="Choose to edit or remove link."><i class="far fa-edit"></i></a>
+										<ul class="dropdown-menu" aria-labelledby="linkEditMenu">
+											<li>
+												<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@("EditLink" + link.Id)">
+													Edit
+												</a>
+
+											</li>
+											<li>
+												<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@("ArchiveLink" + link.Id)">
+													Archive
+												</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!--Link Edit-->
+							<div class="modal fade" id="@("EditLink"+link.Id)" tabindex="-1" role="dialog" aria-labelledby="@("EditLink"+link.Id)" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+									<div class="modal-content blur-modal card-shadow text-white">
+										<div class="modal-header border-0">
+											<h3 class="modal-title">Add Link</h3>
+											<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<form asp-action="EditLink">
+												<input type="hidden" name="cardId" value="@Model.Id" />
+												<input type="hidden" name="linkId" value="@link.Id" />
+												<div class="row justify-content-center">
+													<div class="col-lg-12">
+														<div class="form-group mb-4">
+															<input name="linkURI" type="url" class="form-control" value="@link.Uri" placeholder="e.g: goatrello.azurewebsites.net" required />
+														</div>
+														<div class="form-group float-end">
+															<input type="submit" value="Save" class="btn btn-success  card-shadow" />
+															<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+														</div>
+													</div>
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--Link Archive-->
+							<div class="modal fade" id="@("ArchiveLink"+link.Id)" tabindex="-1" role="dialog" aria-labelledby="@("ArchiveLink"+link.Id)" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content blur-modal card-shadow text-white">
+										<div class="modal-header border-0">
+											<h4 class="modal-title">Are you sure you want to archive <br /><strong>@link.Uri</strong>?</h4>
+											<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-footer border-0">
+											<a asp-action="ArchiveLink" asp-route-linkId="@link.Id" asp-route-CardId="@Model?.Id" class="btn btn-danger card-shadow">
+												Archive
+											</a>
+
+											<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+		<!--Custom Fields Accordion-->
+		@if (Model.CustomFieldDatas.Any()) //check for custom fields
+		{
+			<div class="accordion-item bg-dark border-0" id="accordion-item-CustomField">
+				<h5 class="accordion-header" id="CustomFields">
+					<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4  border-0" data-bs-toggle="collapse" data-bs-target="#collapseCustomFields" aria-expanded="true" aria-controls="collapseCustomFields" style="cursor:pointer;">
+						<i class="fas fa-puzzle-piece me-2"></i>Custom Fields
+					</a>
+				</h5>
+				<div id="collapseCustomFields" class="accordion-collapse collapse show" aria-labelledby="CustomFields">
+					<div class="accordion-body">
+						<div class="row">
+							@foreach (var customFieldData in Model.CustomFieldDatas)
+							{
+								<div class="col-md-12 col-lg-4 col-xl-3 mb-2">
+									<div class="btn-group dropend h-100">
+										<a class="card card-shadow text-decoration-none border-0 earth" style="cursor:pointer; max-width: 260px;" href="#" role="button" id="customFiledEditMenu" data-bs-toggle="dropdown" aria-expanded="false" title="Choose to edit or remove this field.">
+											<div class="card-body text-white">
+												<h5 class="card-text mb-3">
+													<strong>@customFieldData.CustomField.Name</strong>
+												</h5>
+												<p class="card-text text-white-50">@customFieldData.Value.ToString()</p>
+											</div>
+										</a>
+										<ul class="dropdown-menu" aria-labelledby="customFiledEditMenu">
+											<li>
+												<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@("EditCustomField" + customFieldData.CustomField.Id)">
+													Edit
+												</a>
+											</li>
+											<li>
+												<a class="dropdown-item text-black" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#@("RemoveCustomField" + customFieldData.CustomField.Id)">
+													Archive
+												</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		<!--Activities Accordion-->
+		<div class="accordion-item bg-dark border-0" id="accordion-item-activity">
+			<h5 class="accordion-header" id="activities">
+				<a class="text-info text-decoration-none accordion-button bg-dark fw-bold fs-4  border-0" data-bs-toggle="collapse" data-bs-target="#collapseActivities" aria-expanded="true" aria-controls="collapseActivities" style="cursor:pointer;">
+					<i class="fas fa-comment-alt me-2"></i>Activities
+				</a>
+			</h5>
+			<div id="collapseActivities" class="accordion-collapse collapse" aria-labelledby="activities">
+				<div class="accordion-body">
+					@if (!Model.Listing.IsTemplate)  //display comment section only if the card is not a template
+					{
+						<button class="btn post-comment-btn text-white card-shadow mb-2" title="Post comments." data-bs-toggle="modal" data-bs-target="#addCommentModal" @ViewData["WriteProtect"]>
+							+ Add Comment
+						</button>
+						<button onclick="toggleDivs()" id="commentToggle" class="btn btn-outline-secondary float-end mb-2 card-shadow" title="click to show and hide Activity details">Show Details</button>
+
+						<!--Add Comment Modal-->
+						<div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentModal" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+								<div class="modal-content blur-modal card-shadow text-white">
+									<div class="modal-header border-0">
+										<h3 class="modal-title">Add Comment</h3>
+										<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+											<span aria-hidden="true">×</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										<form asp-action="AddComment" asp-route-CardId="@Model.Id">
+											<input type="hidden" name="Id" value="@Model.Id" />
+											<div class="row justify-content-center">
+												<div class="col-lg-12">
+													<div class="form-group mb-4">
+														<textarea name="comment" type="text" wrap="soft" rows="6" class="form-control" placeholder="Type comment here..." required></textarea>
+													</div>
+													<div class="form-group float-end">
+														<button type="submit" value="" class="btn post-comment-btn card-shadow">
+															Post <i class="fas fa-paper-plane"></i>
+														</button>
+														<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+					@foreach (var activity in Model.Activities.OrderByDescending(m => m.Created))
+					{
+						@if (!activity.IsRecord)
+						{
+							<div>
+								<div class="text-white mb-2 w-75" style="word-break:break-word;">
+									<strong>@activity.Author.DisplayName</strong> <span class="text-white-50">@activity.Content.Substring(0,10)</span>
+
+									@if (activity.AuthorId == User.GetUserId())
+									{
+										<a class="blur-card card p-2 text-decoration-none card-shadow card-effect" style="color: #f5f5dc; cursor:pointer; border-radius: 0.6rem;" data-bs-toggle="modal" data-bs-target="#@("EditComment" + activity.Id)" title="click to edit this Comment.">
+											<strong>@activity.Content.Substring(10)</strong>
+										</a>
+									}
+									else
+									{
+										<div class="blur-card card p-2 text-decoration-none card-shadow card-effect" style="color: #f5f5dc; border-radius: 0.6rem;">
+											<strong>@activity.Content.Substring(10)</strong>
+										</div>
+									}
+
+
+									<!--Comment Edit-->
+									<div class="modal fade" id="@("EditComment"+activity.Id)" tabindex="-1" role="dialog" aria-labelledby="@("EditComment"+activity.Id)" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+											<div class="modal-content blur-modal card-shadow text-white">
+												<div class="modal-header border-0">
+													<h3 class="modal-title">Edit Comment</h3>
+													<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+														<span aria-hidden="true">×</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<form asp-action="EditComment">
+														<input type="hidden" name="cardId" value="@Model.Id" />
+														<input type="hidden" name="commentId" value="@activity.Id" />
+														<div class="row justify-content-center">
+															<div class="col-lg-12">
+																<div class="form-group mb-4">
+																	<textarea name="comment" type="text" wrap="soft" rows="6" class="form-control" placeholder="Type comment here..." required>@activity.Content.Substring(10)</textarea>
+																</div>
+																<div class="form-group float-end">
+																	<input type="submit" value="Save" class="btn btn-success  card-shadow" />
+																	<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+																</div>
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<p class="text-white-50 activity-border activity-border-purple only-bottom-border w-50" style="font-size:13px;">
+									@activity.Created.ToString("MMM dd") at @activity.Created.ToString("h:mm tt")
+									@((!activity.IsRecord && activity.IsEdited) ? "(Edited)" : "")
+								</p>
+							</div>
+						}
+						else
+						{
+							<div class="hidden-comment" style="display: none;">
+								<div class="text-white mb-2 w-75" style="word-break:break-word;">
+									<strong>@activity.Author.DisplayName</strong> <span class="text-white-50">@activity.Content</span>
+								</div>
+								<p class="text-white-50 activity-border activity-border-purple only-bottom-border w-50" style="font-size:13px;">
+									@activity.Created.ToString("MMM dd") at @activity.Created.ToString("h:mm tt")
+								</p>
+							</div>
+						}
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="p-2 text-center mb-0">
+	@if (!Model.IsArchived) //only show archive button if card is not archived
+	{
+		<a id="deleteCard" class="text-decoration-none btn btn-danger" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#cardDeleteModal" data-path="/Cards/Delete/@Model?.Id" title="Archive Card" @ViewData["WriteProtect"]>
+			<i class="fas fa-inbox text-white"></i>
+		</a>
+	}
+	<button class="btn blur-button text-white card-shadow" type="button" data-bs-toggle="offcanvas" data-bs-target="#cardMoreActionOffcanvas" title="More actions" @ViewData["WriteProtect"]>
+		@*            <i class="fas fa-ellipsis-h"></i>*@
+		More Actions
+	</button>
+	<a href='@ViewData["returnURL"]' class="btn btn-outline-light card-shadow">Back to Board</a>
+</div>
+
+
+<!--A button to scroll back to top of the page-->
+<button onclick="scrollBackToTop()" id="btnBackToTop" title="Back to page top" class="btn blur-button text-white card-shadow" style="position:fixed; bottom:20px; right: 15px; display:none">
+	<span>
+		<i class="fa fa-chevron-up"></i><br />
+		Top
+	</span>
+</button>
+
+<!-- Card Archive Modal-->
+<div class="modal fade" id="cardDeleteModal" tabindex="-1" role="dialog" aria-labelledby="cardDeleteModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h4 class="modal-title">Are you sure you want to archive <br /><strong>@Model.Title</strong>?</h4>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body text-center">
+				<div class="spinner-border text-light" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				@using (Html.BeginForm("Delete", "Cards", FormMethod.Post, new { id = "cardDeleteForm", @class = "" }))
+				{
+					@Html.AntiForgeryToken()
+
+					<input type="submit" value="Archive" id="submitButton" class="btn btn-danger card-shadow" />
+				}
+				<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Make Card Template Modal-->
+<div class="modal fade" id="copyCardModal" tabindex="-1" role="dialog" aria-labelledby="copyCardModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h4 class="modal-title">You are creating a template from <br /><strong>@Model.Title</strong></h4>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body text-center">
+				<div class="spinner-grow text-light" role="status" style="margin-right:2rem;">
+					<span class="sr-only">Loading...</span>
+				</div>
+				<div class="spinner-grow text-light" role="status" style="margin-right:2rem;">
+					<span class="sr-only">Loading...</span>
+				</div>
+				<div class="spinner-grow text-light" role="status" style="margin-right:2rem;">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				@using (Html.BeginForm("MakeTemplate", "Cards", FormMethod.Post, new { id = "cardCopyForm", @class = "" }))
+				{
+					@Html.AntiForgeryToken()
+					<input type="submit" value="Create Template" id="submitButton" class="btn btn-primary text-white card-shadow" />
+				}
+				<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Card Archive Modal-->
+<div class="modal fade" id="cardDeleteModal" tabindex="-1" role="dialog" aria-labelledby="cardDeleteModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h4 class="modal-title">Are you sure you want to archive <br /><strong>@Model.Title</strong>?</h4>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body text-center">
+				<div class="spinner-border text-light" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				@using (Html.BeginForm("Delete", "Cards", FormMethod.Post, new { id = "cardDeleteForm", @class = "" }))
+				{
+					@Html.AntiForgeryToken()
+
+					<input type="submit" value="Archive" id="submitButton" class="btn btn-danger" />
+				}
+				<button class="btn btn-outline-light" type="button" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--Add Checklist Model-->
+<div class="modal fade" id="addChecklist" tabindex="-1" role="dialog" aria-labelledby="addChecklist" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h3 class="modal-title">Add Checklist</h3>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-controller="Checklists" asp-action="Create">
+					<input type="hidden" name="cardId" value="@Model.Id" />
+					<div class="row justify-content-center">
+						<div class="col-lg-12">
+							<div class="form-group mb-4">
+								<input name="Title" class="form-control" placeholder="ex. Checklist Title" required />
+								<span asp-validation-for="Title" class="text-warning"></span>
+							</div>
+							<div class="form-group float-end">
+								<input type="submit" value="Add Checklist" class="btn btn-success card-shadow" />
+								<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--Link Model-->
+<div class="modal fade" id="addLink" tabindex="-1" role="dialog" aria-labelledby="addLink" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h3 class="modal-title">Add Link</h3>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="AddLink">
+					<input type="hidden" name="cardId" value="@Model.Id" />
+					<div class="row justify-content-center">
+						<div class="col-lg-12">
+							<div class="form-group mb-4">
+								<input name="linkURI" type="url" class="form-control" placeholder="e.g: goatrello.azurewebsites.net" required />
+							</div>
+							<div class="form-group float-end">
+								<input type="submit" value="Add Link" class="btn btn-success  card-shadow" />
+								<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--Attachment Model-->
+<div class="modal fade" id="addAttachment" tabindex="-1" role="dialog" aria-labelledby="addAttachment" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content blur-modal card-shadow text-white">
+			<div class="modal-header border-0">
+				<h3 class="modal-title">Add Attachment(s)</h3>
+				<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Edit" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="Id" value="@Model.Id" />
+					<input type="hidden" name="editType" value="attachment" />
+					<div class="row justify-content-center">
+						<div class="col-lg-12">
+							<div class="input-group mb-4">
+								<input type="file" class="form-control" name="theFiles" multiple="multiple">
+							</div>
+							<div class="form-group float-end">
+								<input type="submit" value="Add Attachment(s)" class="btn btn-success  card-shadow" />
+								<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--Card Offcanvas-->
+<div class="offcanvas offcanvas-end bg-offcanvas text-white show" id="cardMoreActionOffcanvas" data-bs-scroll="true" data-bs-backdrop="false" @ViewData["WriteProtect"]>
+	<div class="offcanvas-header mb-5">
+		<h2 class="offcanvas-title"></h2>
+		<button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+	</div>
+	<div class="offcanvas-body mt-3">
+		<h5 class="ms-1 light-beige">Add to Card</h5>
+		<hr class="mt-0" />
+		<div class="mb-5">
+			@if (String.IsNullOrEmpty(Model.Description))   //display add discription button if no description
+			{
+				<p>
+					<a class="btn btn-offcanvas blur-button text-start text-white card-shadow" title="Add description to the card." data-bs-toggle="modal" data-bs-target="#descriptionEditModal" data-path="/Cards/Edit/@Model?.Id">
+						<i class="far fa-file-alt me-2"></i>Description
+					</a>
+				</p>
+			}
+			@if (!Model.DueDate.HasValue)  //display add due date button if no duedate
+			{
+				<p>
+					<a class="btn btn-offcanvas blur-button text-start text-white card-shadow" title="Add due date to the card." data-bs-toggle="modal" data-bs-target="#editDueDateModal" data-path="/Cards/Edit/@Model?.Id">
+						<i class="fas fa-clock me-2"></i>Due Date
+					</a>
+				</p>
+			}
+			<p>
+				<div class="dropdown">
+					<a class="btn btn-offcanvas blur-button text-start text-white card-shadow dropdown-toggle" title="Add label to the card." href="#" role="button" id="labelMenu" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-tag me-2"></i>Label
+					</a>
+					<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="labelMenu">
+						@if (labels.Where(l => l.ListId == Model.Labels.Id).Count() == boardLabels.Count())  //if all board labels are added to the card already, display no labels to add option.
+						{
+							<li>
+								<a class="dropdown-item disabled">
+									<i class="fas fa-tag me-2"></i>No more Labels to Add
+								</a>
+							</li>
+						}
+						@foreach (var label in boardLabels)
+						{
+							if (!labels.Any(l => l.LabelId == label.LabelId))
+							{
+								<li>
+									<a asp-action="AddLabel" asp-route-cardId="@Model?.Id" asp-route-LabelId="@label.Label.Id" class="dropdown-item" style="background-color: @label.Label.Color" title="Add this label to card.">
+										<i class="fas fa-tag me-2"></i>@label.Label.Title
+									</a>
+								</li>
+							}
+						}
+					</ul>
+				</div>
+			</p>
+
+			<p>
+				<div class="dropdown">
+					<a class="btn btn-offcanvas blur-button text-start text-white card-shadow dropdown-toggle" title="Add member to the card." href="#" role="button" id="memberMenu" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-user me-2"></i>Member
+					</a>
+					<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="memberMenu">
+
+						@foreach (var user in ViewBag.Users)
+						{
+							<li>
+								<a asp-action="AddUser" asp-route-cardId="@Model?.Id" asp-route-userId="@user.Id" class="dropdown-item" title="Tag this user on this card.">
+									<i class="fas fa-user me-2"></i>@user.DisplayName
+								</a>
+							</li>
+						}
+					</ul>
+				</div>
+			</p>
+
+			@if (Model.DueDate.HasValue && !Model.IsDueDateComplete)    //if due date exist and is not completed, let the user set reminder
+			{
+				<p>
+					<div class="dropdown">
+						<a class="btn btn-offcanvas blur-button text-start text-white card-shadow dropdown-toggle" title="Set reminder for the card." href="#" role="button" id="reminderMenu" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="far fa-bell me-2"></i>Reminder
+						</a>
+						<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="reminderMenu">
+							@if (Model.DueDate >= DateTime.Now)   //check to make sure it is not overdue
+							{
+								var timeDiff = (Model.DueDate - DateTime.Now).GetValueOrDefault().TotalHours;  //get the time difference in hours
+								if (Model.Reminder.HasValue && Model.Reminder.GetValueOrDefault().TotalHours > 0)  //reset option only show up if reminder exists
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="0" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>Clear Reminder</button></li>
+									</form>
+								}
+
+								if (timeDiff >= 1)  //60min
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="1" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>1 Hour</button></li>
+									</form>
+								}
+								if (timeDiff >= 3)  //3 hours
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="3" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>3 Hours</button></li>
+									</form>
+								}
+								if (timeDiff >= 6)  //6 hours
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="6" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>6 Hours</button></li>
+									</form>
+								}
+								if (timeDiff >= 12) //12 hours
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="12" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>12 Hours</button></li>
+									</form>
+								}
+								if (timeDiff >= 24)     //1 day
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="24" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>1 Day</button></li>
+									</form>
+								}
+								if (timeDiff >= 72)     //3 days
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="72" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>3 Days</button></li>
+									</form>
+								}
+								if (timeDiff >= 168)  //7 days
+								{
+									<form asp-action="Edit">
+										<input type="hidden" name="Id" value="@Model.Id" />
+										<input type="hidden" name="editType" value="reminder" />
+										<input type="hidden" name="Reminder" value="168" />
+									<li><button type="submit" class="dropdown-item"><i class="fas fa-stopwatch me-2"></i>7 Days</button></li>
+									</form>
+								}
+								if (timeDiff < 0.25)  //less than 15 mins
+								{
+									<li><a class="dropdown-item disabled">This card is Due in 15 Minutes.</a></li>
+								}
+							}
+							else  //if card is overdue...
+							{
+								<li><a class="dropdown-item disabled" title="Extend the due date to set the reminder">This card is Overdue</a></li>
+							}
+						</ul>
+					</div>
+				</p>
+			}
+
+			<p>
+				<a asp-action="Create" asp-controller="Checklists" asp-route-CardId="@Model?.Id" class="btn btn-offcanvas blur-button text-start text-white card-shadow" title="Add new checklist to the card.">
+					<i class="fas fa-tasks me-2"></i>Checklist
+				</a>
+			</p>
+			<p>
+				<a class="btn btn-offcanvas blur-button text-start text-white card-shadow" title="Add attachment to the card." data-bs-toggle="modal" data-bs-target="#addAttachment" data-path="/Cards/Edit/@Model?.Id">
+					<i class="fas fa-paperclip me-2"></i>Attachment
+				</a>
+			</p>
+			<p>
+				<a class="btn btn-offcanvas blur-button text-start text-white card-shadow" title="Add link to the card." data-bs-toggle="modal" data-bs-target="#addLink" data-path="/Cards/AddLink/@Model?.Id">
+					<i class="fas fa-link me-2"></i>Link
+				</a>
+			</p>
+			<p>
+				<div class="dropdown">
+					<a class="btn btn-offcanvas blur-button text-start text-white card-shadow dropdown-toggle" title="Add custom field to the card." href="#" role="button" id="customFieldMenu" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-puzzle-piece me-2"></i>Custom Field
+					</a>
+					<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="customFieldMenu">
+						@foreach (var field in ViewBag.CustomFields)
+						{
+							var addCustomFieldModel = "addCustomFieldModel" + field.Id; //generate an id for the modal
+
+							<li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#@addCustomFieldModel" data-path="/Cards/AddCustomFieldData/@Model?.Id"><i class="fas fa-puzzle-piece me-2"></i>@field.Name</a></li>
+
+						}
+
+						@if (ViewBag.CustomFields == null || ((IQueryable<CustomField>)ViewBag.CustomFields).Count() == 0)   //display message when no custom field exists
+						{
+							<li><a class="dropdown-item disabled"><i class="fas fa-puzzle-piece me-2"></i>No Custom Fields available</a></li>
+						}
+
+					</ul>
+				</div>
+			</p>
+		</div>
+
+
+		<h5 class="ms-1 light-beige mt-2">More Actions</h5>
+		<hr class="mt-0" />
+		<div>
+			@if (!Model.Listing.IsTemplate) //display create template button only if the card is not a template
+			{
+				<p>
+					<a id="copyCard" class="btn btn-offcanvas btn-primary text-start card-shadow" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#copyCardModal" data-path="/Cards/MakeTemplate?CardID=@Model?.Id" title="Create a template from this Card">
+						<i class="far fa-copy me-2"></i>Create Template
+					</a>
+				</p>
+			}
+			<p>
+				<div class="dropdown">
+					<a class="btn btn-offcanvas move-card-btn text-start text-white card-shadow dropdown-toggle" title="Move card to another list." href="#" role="button" id="changeListingMenu" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-exchange-alt me-1"></i>
+						Move To
+					</a>
+					<ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="changeListingMenu">
+						@foreach (var list in ViewBag.boardListings)
+						{
+							<form asp-action="Edit">
+								<input type="hidden" name="Id" value="@Model.Id" />
+								<input type="hidden" name="ListingId" value="@list.Id" />
+								<input type="hidden" name="editType" value="listing" />
+							<li><button type="submit" class="dropdown-item"><i class="fas fa-user me-2"></i>@list.Title</button></li>
+							</form>
+						}
+					</ul>
+				</div>
+			</p>
+			@if (!Model.IsArchived) //display archive button only if the card is not archived
+			{
+				<p>
+					<a id="deleteCard" class="btn btn-offcanvas btn-danger text-start card-shadow" style="cursor: pointer" data-bs-toggle="modal" data-bs-target="#cardDeleteModal" data-path="/Cards/Delete/@Model?.Id" title="Archive this card">
+						<i class="fas fa-inbox me-2"></i>Archive Card
+					</a>
+				</p>
+			}
+			<p>
+				<a class="btn btn-offcanvas btn-outline-light text-start card-shadow" data-bs-dismiss="offcanvas" title="Close the menu">
+					<i class="far fa-times-circle me-2"></i>Close Menu
+				</a>
+			</p>
+		</div>
+
+	</div>
+</div>
+
+<!--Custom Field Models-->
+@foreach (var field in ViewBag.CustomFields)
+{
+	var addCustomFieldModel = "addCustomFieldModel" + field.Id; //generate an id for the modal
+
+	var dataType = (field.FieldDataType.ToString() == "String") ? "text" : "number";
+	var dataStep = (field.FieldDataType.ToString() == "Float") ? "any" : "1";
+	<!--Model-->
+	<div class="modal fade" id="@addCustomFieldModel" tabindex="-1" role="dialog" aria-labelledby="@addCustomFieldModel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content blur-modal card-shadow text-white">
+				<div class="modal-header border-0">
+					<h3 class="modal-title">Add @field.Name</h3>
+					<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="AddCustomFieldData" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="cardId" value="@Model.Id" />
+						<input type="hidden" name="customFieldId" value="@field.Id" />
+						<div class="row justify-content-center">
+							<div class="col-lg-12">
+								<div class="input-group mb-4">
+
+									<input type="@dataType" step="@dataStep" required class="form-control" name="value">
+
+								</div>
+								<div class="form-group float-end">
+									<input type="submit" value="Add @field.Name" class="btn btn-success  card-shadow" />
+									<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+}
+@foreach (var customFieldData in Model.CustomFieldDatas)
+{
+
+	var dataType = (customFieldData.CustomField.FieldDataType.ToString() == "String") ? "text" : "number";
+	var dataStep = (customFieldData.CustomField.FieldDataType.ToString() == "Float") ? "any" : "1";
+
+	<div class="modal fade" id="@("EditCustomField" + customFieldData.CustomField.Id)" tabindex="-1" role="dialog" aria-labelledby="@("EditCustomField" + customFieldData.CustomField.Id)" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content blur-modal card-shadow text-white">
+				<div class="modal-header border-0">
+					<h3 class="modal-title">Edit @customFieldData.CustomField.Name</h3>
+					<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form asp-action="EditCustomFieldData" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="cardId" value="@Model.Id" />
+						<input type="hidden" name="customFieldId" value="@customFieldData.CustomFieldId" />
+						<div class="row justify-content-center">
+							<div class="col-lg-12">
+								<div class="input-group mb-4">
+
+									<input type="@dataType" step="@dataStep" required class="form-control" name="value" value="@customFieldData.Value">
+
+								</div>
+								<div class="form-group float-end">
+									<input type="submit" value="Save" class="btn btn-success  card-shadow" />
+									<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--Link Archive-->
+	<div class="modal fade" id="@("RemoveCustomField" + customFieldData.CustomField.Id)" tabindex="-1" role="dialog" aria-labelledby="@("RemoveCustomField" + customFieldData.CustomField.Id)" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content blur-modal card-shadow text-white">
+				<div class="modal-header border-0">
+					<h4 class="modal-title">Are you sure you want to remove <br /><strong>@customFieldData.CustomField.Name</strong> from this card?</h4>
+					<button class="close btn bg-transparent text-white" type="button" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;" title="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-footer border-0">
+					<a asp-action="DeleteCustomFieldData" asp-route-customFieldId="@customFieldData.CustomFieldId" asp-route-CardId="@Model?.Id" class="btn btn-danger card-shadow">
+						Remove
+					</a>
+
+					<button class="btn btn-outline-light card-shadow" type="button" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<!--Hoverable Sidemenu-->
+<button id="offcanvasSideButton" title="Add more sections or edit the card." class="btn blur-button text-white card-shadow btn-side-hoverable p-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#cardMoreActionOffcanvas" @ViewData["WriteProtect"]>
+	<i class="fas fa-chevron-left me-3"></i><span class="">More Actions</span>
+</button>
+
+<!-- Side Jumplinks-->
+<div class="sidehoverbar">
+	<p>
+		<a href="#topEditButtonGroup" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Description section">
+			Description
+			<i class="far fa-file-alt mt-1"></i>
+		</a>
+	</p>
+	@if (labels.Any() && Model.Labels != null)
+	{
+		<p>
+			<a href="#accordion-item-label" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Labels section">
+				Labels
+				<i class="fas fa-tag mt-1"></i>
+			</a>
+		</p>
+	}
+	@if (Model.Users != null && Model.Users.Users.Any())
+	{
+		<p>
+			<a href="#accordion-item-member" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Members section">
+				Members
+				<i class="fas fa-user mt-1"></i>
+			</a>
+		</p>
+	}
+
+	@if (Model.DueDate.HasValue)
+	{
+		<p>
+			<a href="#accordion-item-duedate" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Due Date section">
+				Due Date
+				<i class="far fa-clock mt-1"></i>
+			</a>
+		</p>
+	}
+	@if (Model.Checklists.Any() && (Model.Checklists.Where(ch => !ch.IsArchived).Any())) //check for checklists
+	{
+		<p>
+			<a href="#accordion-item-checklist" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Checklists section">
+				Checklists
+				<i class="fas fa-tasks mt-1"></i>
+			</a>
+		</p>
+	}
+	@if (Model.Attachments.Any() && (Model.Attachments.Where(att => !att.IsArchived).Any())) //check for attachments
+	{
+		<p>
+			<a href="#accordion-item-attachment" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Attachments section">
+				Attachments
+				<i class="fas fa-paperclip mt-1"></i>
+			</a>
+		</p>
+	}
+	@if (Model.Links.Any() && (Model.Links.Where(l => !l.IsArchived).Any())) //check for links
+	{
+		<p>
+			<a href="#accordion-item-link" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Links section">
+				Links
+				<i class="fas fa-link mt-1"></i>
+			</a>
+		</p>
+	}
+	@if (Model.CustomFieldDatas.Any()) //check for custom fields
+	{
+		<p>
+			<a href="#accordion-item-CustomField" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Custom Fields section">
+				Custom Fields
+				<i class="fas fa-puzzle-piece mt-1"></i>
+			</a>
+		</p>
+	}
+	<p>
+		<a href="#accordion-item-activity" class="jumplink-button btn btn-secondary card-shadow" title="Navigate to Activities section">
+			Activities
+			<i class="fas fa-comment-alt mt-1"></i>
+		</a>
+	</p>
+</div>
+
+@section Scripts {
+	<script>
+		let btnBackToTop = document.getElementById("btnBackToTop");
+		window.onscroll = function () { scrollDownDisplayButton() };
+
+		function scrollDownDisplayButton() {
+			if (document.body.scrollTop > 25 || document.documentElement.scrollTop > 25) {
+				btnBackToTop.style.display = "block"; //display button if user scrolls down 25px from top of the page
+			} else {
+				btnBackToTop.style.display = "none";
+			}
+		}
+
+		// When the user clicks on the button, scroll to the top of the document
+		function scrollBackToTop() {
+			document.body.scrollTop = 0;
+			document.documentElement.scrollTop = 0;
+		}
+	</script>
+	<script>
+		var path_to_delete;
+		var root = location.protocol + "//" + location.host;
+		//card delete
+		$("#deleteCard").click(function (e) {
+			path_to_delete = $(this).data('path');
+			$('#cardDeleteForm').attr('action', root + path_to_delete);
+		});
+		//card create template
+		$("#copyCard").click(function (e) {
+			path_to_delete = $(this).data('path');
+			$('#cardCopyForm').attr('action', root + path_to_delete);
+		});
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#Description').summernote({
+				v: true,
+				placeholder: 'Add description for the Card here...',
+				tabsize: 2,
+				height: 300,
+				toolbar: [
+					['style', ['style']],
+					['font', ['bold', 'underline', 'clear']],
+					['color', ['color']],
+					['para', ['ul', 'ol', 'paragraph']],
+					['table', ['table']],
+					//['insert', ['link', 'picture']],
+					['view', ['fullscreen']]
+				]
+			});
+		});
+	</script>
+	<script>
+		//For fixing rich text editor popups inside nested modal popup
+		$('#editDescriptionModal').on('shown.bs.modal', function () {
+			$('#Description').summernote();
+		})
+		$(document).on("show.bs.modal", '.modal', function (event) {
+			console.log("Global show.bs.modal fire");
+			var zIndex = 100000 + (10 * $(".modal:visible").length);
+			$(this).css("z-index", zIndex);
+			setTimeout(function () {
+				$(".modal-backdrop").not(".modal-stack").first().css("z-index", zIndex - 1).addClass("modal-stack");
+			}, 0);
+		}).on("hidden.bs.modal", '.modal', function (event) {
+			console.log("Global hidden.bs.modal fire");
+			$(".modal:visible").length && $("body").addClass("modal-open");
+		});
+		$(document).on('inserted.bs.tooltip', function (event) {
+			console.log("Global show.bs.tooltip fire");
+			var zIndex = 100000 + (10 * $(".modal:visible").length);
+			var tooltipId = $(event.target).attr("aria-describedby");
+			$("#" + tooltipId).css("z-index", zIndex);
+		});
+		$(document).on('inserted.bs.popover', function (event) {
+			console.log("Global inserted.bs.popover fire");
+			var zIndex = 100000 + (10 * $(".modal:visible").length);
+			var popoverId = $(event.target).attr("aria-describedby");
+			$("#" + popoverId).css("z-index", zIndex);
+		});
+	</script>
+	<script>
+		var dueDate = @Json.Serialize(dueDate);
+		var reminder = @Json.Serialize(reminder);
+
+		if (dueDate && reminder) {
+			var countdownElem = document.getElementById("countdown");
+
+			function updateCountdown() {
+				var now = new Date();
+				var dueDateTime = new Date(dueDate);
+				var reminderHours = parseInt(reminder) || 0;
+
+				dueDateTime.setHours(dueDateTime.getHours() - reminderHours);
+
+				var timeLeft = Math.max(0, dueDateTime.getTime() - now.getTime());
+
+				if (timeLeft == 0) {
+					countdownElem.textContent = "Time is up!";
+				} else {
+					var days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+					var hours = Math.floor(timeLeft / (60 * 60 * 1000)) % 24;
+					var minutes = Math.floor(timeLeft / (60 * 1000)) % 60;
+					var seconds = Math.floor(timeLeft / 1000) % 60;
+
+					countdownElem.textContent = days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds";
+				}
+			}
+
+			updateCountdown();
+			setInterval(updateCountdown, 1000);
+		}
+	</script>
+	<!--For url validation-->
+	<script>
+		// Run a callback function after DOM is fully loaded
+		function domReady(callback) {
+			if (document.readyState != "loading") {
+				callback();
+			} else {
+				document.addEventListener("DOMContentLoaded", callback);
+			}
+		}
+
+		// Prepend https to url input field value if already not prepended by http or https
+		domReady(() => {
+			const urlInput = document.querySelectorAll('input[type="url"]');
+
+			for (i = 0; i < urlInput.length; i++) {
+				urlInput[i].addEventListener('change', function () {
+					let urlValue = this.value;
+
+					if (!urlValue.match(/^https?:/i) && urlValue.length) {
+						urlValue = "https://" + urlValue;
+						this.value = urlValue;
+					} else if (urlValue.match(/^http:/i)) {
+						urlValue = urlValue.replace(/^http:/i, "https:");
+						this.value = urlValue;
+					}
+				});
+			}
+		});
+	</script>
+	<script>
+		//For show and hide activities
+		function toggleDivs() {
+			var divs = document.querySelectorAll(".hidden-comment");
+			var button = document.getElementById("commentToggle");
+			if (divs[0].style.display === "none") {
+				for (var i = 0; i < divs.length; i++) {
+					divs[i].style.display = "block";
+				}
+				button.innerHTML = "Hide Details";
+				button.classList.remove("btn-outline-secondary");
+				button.classList.add("btn-outline-warning");
+			} else {
+				for (var i = 0; i < divs.length; i++) {
+					divs[i].style.display = "none";
+				}
+				button.innerHTML = "Show Details";
+				button.classList.remove("btn-outline-warning");
+				button.classList.add("btn-outline-secondary");
+			}
+		}
+	</script>
+}

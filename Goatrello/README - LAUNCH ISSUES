@@ -1,0 +1,10 @@
+If you pull a branch and the program won't start, take the following steps:
+
+1) delete GoatrelloData.db (and any related files)
+2) delete Data/DataMigrations (and all contents)
+3) migrate the db:
+    VS: Add-Migration -Context ApplicationDbContext -OutputDir Data\Migrations Initial
+    VS: Add-Migration -Context GoatrelloDataContext -OutputDir Data\DataMigrations Initial
+    Rider: dotnet ef migrations add --context GoatrelloDataContext -o Data\DataMigrations InitialCreate
+    Rider: dotnet ef database update -c GoatrelloDataContext
+    

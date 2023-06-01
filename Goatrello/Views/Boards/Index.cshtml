@@ -1,0 +1,103 @@
+﻿@using Goatrello.Services
+@model IEnumerable<Goatrello.Models.Board>
+
+@{
+	ViewBag.Title = "title";
+	Layout = "_Layout";
+}
+<div class="pt-4">
+	<h2 class="text-white">Boards</h2>
+</div>
+<form asp-action="Index" method="get">
+	<input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+	<input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+	<div class="form-horizontal">
+		<button class="btn @(ViewData["Filtering"]) card-shadow" type="button" data-bs-toggle="collapse" id="filterToggle" data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter" data-toggle="tooltip" data-placement="top" title="Search/Filter">
+			<i class="fas fa-search"></i> / <i class="fas fa-filter"></i>
+		</button>
+		<div class="collapse mt-2" id="collapseFilter">
+			<div class="card card-body card-shadow royal text-white col-xl-4 col-lg-6 col-md-8 col-sm-10" style="max-width:73%;">
+				<div class="row">
+					<div class="col-md-10">
+						<div class="form-group mb-3">
+							<label class="control-label">Sort By:</label>
+							<div class="input-group">
+								<select name="sortFieldID" class="form-control" asp-items="ViewBag.sortFieldID"></select>
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<div class="form-check form-switch">
+											<input type="checkbox" class="form-check-input" value="desc"
+											@((ViewData["sortDirection"].ToString() != "asc" ? "checked=\"checked\"" : ""))
+												   name="sortDirectionCheck" />&nbsp;&nbsp;Descending
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<div class="form-group mb-3">
+							<label class="control-label">Search Board Name:</label>
+							@Html.TextBox("searchString", null, new { @class = "form-control", @placeholder = "Enter Board Name" })
+						</div>
+					</div>
+					<div class="form-group col-md-6 align-self-end mt-1">
+						<input type="submit" name="actionButton" value="Apply" class="btn btn-success card-shadow" />
+						<a asp-action="Index" class="btn btn-secondary card-shadow">Clear</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br />
+
+	<div class="row">
+		<div class="col-sm-12 col-md-6 col-lg-3 mb-3">
+			<a asp-action="Create" style="padding-top:3.2rem;" class="text-white card btn blur-button card-shadow board-card">
+				Create New Board
+			</a>
+		</div>
+		@foreach (var item in Model)
+		{
+			<div class="col-sm-12 col-md-6 col-lg-3 mb-3 card bg-transparent border-0">
+				<a asp-action="Index" asp-controller="Listings" asp-route-BoardId="@item.Id" class="text-white btn kashmir card-shadow board-card card-effect" style="text-align:left;">
+					<p class="card-text text-white pt-2 mb-5">
+						@item.Title
+
+
+					</p>
+					<p>
+						@{
+							var user = await GoatAuthorize.CreateFromContext(Context);
+							bool canRead = await user.BoardAccess(item.Id, GoatAuthorizeType.Read);
+							if (canRead)
+							{
+								<span class="badge bg-transparent text-white-50 float-end" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="You have permission to view this board">
+									<i class="fas fa-eye"></i>
+								</span>
+							}
+							bool canWrite = await user.BoardAccess(item.Id, GoatAuthorizeType.Write);
+							if (canWrite)
+							{
+								<span class="badge bg-transparent text-white-50 float-end" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="You have permission to edit this board">
+									<i class="fas fa-feather"></i>
+								</span>
+							}
+							bool isAdmin = await user.BoardAccess(item.Id, GoatAuthorizeType.Admin);
+							if (isAdmin)
+							{
+								<span class="badge bg-transparent text-white-50 float-end" style="margin-bottom:0.5rem;" data-toggle="tooltip" data-placement="top" title="You are admin user">
+									<i class="fas fa-user-cog"></i>
+								</span>
+							}
+						}
+					</p>
+				</a>
+			</div>
+		}
+	</div>
+
+	<partial name="_PagingNavBar" />
+</form>

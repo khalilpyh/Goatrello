@@ -1,0 +1,7 @@
+﻿Add-Migration -Context ApplicationDbContext -OutputDir Data\Migrations Initial
+
+Add-Migration -Context GoatrelloDataContext -OutputDir Data\DataMigrations Initial
+
+// Rider version
+dotnet ef migrations add --context GoatrelloDataContext -o Data\DataMigrations InitialCreate
+dotnet ef database update -c GoatrelloDataContext
