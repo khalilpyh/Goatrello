@@ -63,7 +63,7 @@ namespace Goatrello.Data.DataMigrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
                     FieldDataType = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -268,7 +268,7 @@ namespace Goatrello.Data.DataMigrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: true),
                     Values = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -290,7 +290,7 @@ namespace Goatrello.Data.DataMigrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ReportId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: true),
                     Values = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>

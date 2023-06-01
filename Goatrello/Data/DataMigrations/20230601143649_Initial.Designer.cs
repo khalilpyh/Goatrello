@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Goatrello.Data.DataMigrations
 {
     [DbContext(typeof(GoatrelloDataContext))]
-    [Migration("20230405170324_Initial")]
+    [Migration("20230601143649_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
 
             modelBuilder.Entity("Goatrello.Models.Activity", b =>
                 {
@@ -235,6 +235,8 @@ namespace Goatrello.Data.DataMigrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -407,8 +409,8 @@ namespace Goatrello.Data.DataMigrations
                     b.Property<int>("ReportId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Values")
                         .HasColumnType("TEXT");
@@ -434,8 +436,8 @@ namespace Goatrello.Data.DataMigrations
                     b.Property<int>("ReportId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Values")
                         .HasColumnType("TEXT");

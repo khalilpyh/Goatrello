@@ -94,6 +94,6 @@ app.UseStaticFiles();
 
 //initialize Databases
 //Uncommenting this will reset the database
-//GoatrelloDataInitializer.Seed(app, builder.Environment);
+GoatrelloDataInitializer.Seed(app, builder.Environment);
 
 app.Run();
