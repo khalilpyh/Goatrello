@@ -1,5 +1,6 @@
 # GOATRELLO
-Repository for PROG1440 Community Project with SoilOptix.
+Repository for Community Project with SoilOptix.
+A revised and more efficient software to replace Trello, exclusively for SoilOptix.
 
 # Team and Contact
 Cameron Shaefer
